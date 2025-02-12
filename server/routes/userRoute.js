@@ -1,9 +1,12 @@
 import express from "express";
-import { signinUser, signupUser } from "../controllers/userController.js";
+import { changePassword, getUser, updateUser } from "../controllers/userController.js";
+import { authenticationToken } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-router.post('/signup', signupUser);
-router.post('/signin', signinUser);
+router.get("/", authenticationToken, getUser);
+router.put("/", authenticationToken, updateUser);
+router.put("/changepassword", authenticationToken, changePassword);
+
 
 export default router;

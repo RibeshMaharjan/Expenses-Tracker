@@ -10,7 +10,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
 	email VARCHAR(60) NOT NULL,
 	user_type user_type NOT NULL DEFAULT 'user',
-	created_at TIMESTAMP NOT NULL
+	created_at TIMESTAMP NOT NULL,
+	updated_at TIMESTAMP
 );
 
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
@@ -21,9 +22,11 @@ VALUES
 	('Dave Smith', 'davesmith', 'davesmith', 'davesmith@gmail.com', 'user', CURRENT_TIMESTAMP),
 	('Andre White', 'andrewhite', 'andrewhite', 'andrewhite@gmail.com', 'user', CURRENT_TIMESTAMP);
 
-SELECT * FROM public.users
-ORDER BY id ASC;
+SELECT * FROM users;
 
+SELECT * FROM users WHERE email = 'johndoe@gmal.com';
+
+SELECT EXISTS (SELECT * FROM users WHERE email = 'johndoe@gmail.com');
 
 DROP TABLE users CASCADE;
 -- users TABLE END

@@ -20,8 +20,9 @@ export const comparePassword = async (userPassword, password) => {
   }
 }
 
-export const createToken = ({ name, username, email, user_type }) => {
+export const createToken = ({ id, name, username, email, user_type }) => {
   const payload = {
+    id,
     name,
     username,
     email,

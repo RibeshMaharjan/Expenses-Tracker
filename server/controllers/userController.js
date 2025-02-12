@@ -1,108 +1,150 @@
 import * as db from "../config/db.js";
-import { comparePassword, createToken, hashPassword } from "../utils/index.js";
+import { comparePassword, hashPassword } from "../utils/index.js";
 
-export const signupUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
-    const { name, username, password, email } = req.body;
-
-    if(!(name || username || password || email))  {
-      req.status(404).json({
-        status: "failed",
-        message: "Provide Required Fields!",
-      });
-    }
+    const { id } = req.user;
 
     const userExist = await db.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
+      `SELECT * FROM users WHERE id = $1`,
+      [id]
     );
 
-    if(userExist.rowCount) {
-      console.log("User Already Exist");
-      return res.status(400).json({
-        status: "failed",
-        message: "User Already Exist",
-      });  
+    const user = userExist.rows[0];
+    
+    if(!user) {
+      return res.status(404).json({
+        status: "Not found",
+        message: "User not found",
+      })
     }
 
-    const hashPwd = await hashPassword(password);
+    user.password = undefined;
 
-    // console.log()hashPwd;
-    
-
-    const user = await db.query(
-      "INSERT INTO users (name, username, password, email, created_at) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *",
-      [name, username, hashPwd, email],
-    );
-
-    user.rows[0].password = undefined;
-
-    return res.status(201).json({
-      status: 'success',
-      message: 'User account created successfully',
-      user: user.rows[0],
+    return res.status(200).json({
+      status: "success",
+      user,
     })
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status: "failed",
+      status: "Internal server error",
       message: error.message,
     });
   }
 }
 
-export const signinUser = async(req, res) => {
+export const changePassword = async(req, res) => {
   try {
-    const { email, password } = req.body;
+    const { id } = req.user;
+    const { currentPassword, newPassword, confirmPassword  } = req.body;
 
-    if(!(password || email))  {
-      req.status(404).json({
-        status: "failed",
-        message: "Provide Required Fields!",
-      });
-    }
-
-    const result = await db.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
+    const userExist = await db.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [id]
     );
 
-    const user = result.rows[0];
-
-    console.log(user);
-    
-
-    if(!user) {
-      res.status(404).json({
-        status: "failed",
-        message: "Invalid email",
-      });
+    if(!(currentPassword || newPassword || confirmPassword)) {
+      return res.status(400).json({
+        status: "Bad request",
+        message: "Provide Required Fields!",
+      })
     }
 
-    const isMatch = await comparePassword(password, user?.password);
+    if(!userExist.rowCount) {
+      return res.status(404).json({
+        status: "Not Found",
+        message: "User not found",
+      })
+    }
+
+    if(newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: "Bad request",
+        message: "New Passwords does not match",
+      })
+    }
+
+    const isMatch = await comparePassword(currentPassword, userExist.rows[0].password)
 
     if(!isMatch) {
-      res.status(404).json({
-        status: "failed",
-        message: "Invalid password",
-      });
+      return res.status(401).json({
+        status: "Unauthorized",
+        message: "Incorrect current password.",
+      })
     }
 
-    user.password = undefined;
+    const hashedPassword = await hashPassword(newPassword);
 
-    const token = createToken(user);
-    res.status(200).json({
-      status: "success",
-      message: "Login successfully",
-      user,
-      token,
+    await db.query(
+      `UPDATE users SET
+        password = $1
+        WHERE id = $2`,
+      [hashedPassword, id]
+    )
+
+    return res.status(200).json({
+      status: "Success",
+      message: "Password changed successfully",
     });
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status: "failed",
+      status: "Internal server error",
+      message: error.message,
+    });
+  }
+}
+
+export const updateUser = async(req, res) => {
+  try {
+
+    const { id } = req.user;
+    const { name, username, email } = req.body;
+
+    const userExist = await db.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [id]
+    );
+
+    if(!userExist.rowCount) {
+      return res.status(404).json({
+        status: "Not Found",
+        message: "User not found",
+      })
+    }
+
+    if(!(name || username || email)) {
+      return res.status(400).json({
+        status: "Bad request",
+        message: "Provide Required Fields!",
+      })
+    }
+
+    const updatedUser = await db.query(
+      `UPDATE users SET
+        name = $1,
+        username = $2,
+        email = $3,
+        updated_at = CURRENT_TIMESTAMP
+        WHERE id = $4
+        RETURNING *`,
+      [name, username, email, id]
+    )
+
+    updatedUser.rows[0].password = undefined;
+
+    return res.status(200).json({
+      status: "Success",
+      message: "User information updated successfully",
+      user: updatedUser.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "Internal server error",
       message: error.message,
     });
   }
