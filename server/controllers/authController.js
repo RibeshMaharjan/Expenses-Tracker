@@ -6,8 +6,7 @@ export const signupUser = async (req, res) => {
     const { name, username, password, email } = req.body;
 
     if(!(name || username || password || email))  {
-      return res.status(400).json({
-        status: "Bad request",
+      return res.status(422).json({
         message: "Provide Required Fields!",
       });
     }
@@ -20,7 +19,6 @@ export const signupUser = async (req, res) => {
     if(userExist.rowCount) {
       console.log("User Already Exist");
       return res.status(409).json({
-        status: "Conflict",
         message: "User Already Exist",
       });  
     }
@@ -35,7 +33,6 @@ export const signupUser = async (req, res) => {
     user.rows[0].password = undefined;
 
     return res.status(201).json({
-      status: 'Success',
       message: 'User account created successfully',
       user: user.rows[0],
     })
@@ -43,7 +40,6 @@ export const signupUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal Server Error",
       message: error.message,
     });
   }
@@ -55,7 +51,6 @@ export const signinUser = async(req, res) => {
 
     if(!(password || email))  {
       return res.status(404).json({
-        status: "Bad request",
         message: "Provide Required Fields!",
       });
     }
@@ -69,7 +64,6 @@ export const signinUser = async(req, res) => {
 
     if(!user) {
       return res.status(401).json({
-        status: "Unauthorized",
         message: "Invalid email",
       });
     }
@@ -78,7 +72,6 @@ export const signinUser = async(req, res) => {
 
     if(!isMatch) {
       return res.status(401).json({
-        status: "Unauthorized",
         message: "Invalid password",
       });
     }
@@ -87,7 +80,6 @@ export const signinUser = async(req, res) => {
 
     const token = createToken(user);
     return res.status(200).json({
-      status: "Success",
       message: "Login successfully",
       user,
       token,
@@ -96,7 +88,6 @@ export const signinUser = async(req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal server error",
       message: error.message,
     });
   }
