@@ -8,24 +8,21 @@ export const getAllBankAccount = async (req, res) => {
       `SELECT * FROM bank_accounts WHERE user_id = $1;`,
       [id]
     )
-  
+
     if(allBankAccount.rows.length === 0) {
       return res.status(200).json({
-        status: "No Accounts",
-        message: "No bank accounts found for this user",
-        bankAccounts: [], // Return empty array as no data was found
+        data: [], // Return empty array as no data was found
       })
     }
     
+    
     return res.status(200).json({
-      status: "Success",
-      message: "Bank accounts retrieved successfully",
-      bankAccounts: allBankAccount.rows, // Return array of bank accounts
+      data: allBankAccount.rows, // Return array of bank accounts
     })
+
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal Server Error",
       message: "There was a problem retrieving your bank accounts",
     })
     
@@ -44,22 +41,18 @@ export const getBankAccount = async (req, res) => {
 
     if(bankAccount.rows.length === 0) {
       return res.status(200).json({
-        status: "No Account",
-        message: "No bank account found",
-        bankAccount: bankAccount.rows[0],
+        data: [], // Return empty array as no data was found
       })
     }
 
     return res.status(200).json({
-      status: "Success",
       message: "Bank account retrieved successfully",
-      bankAccount: bankAccount.rows[0],
+      data: bankAccount.rows[0],
     })
 
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal Server Error",
       message: "There was a problem retrieving your bank account",
     })
   }
@@ -71,9 +64,8 @@ export const createBankAccount = async (req, res) => {
     const { account_no, account_holder_name, bank_name, balance } = req.body;
 
     if(!account_no || !account_holder_name || !bank_name || !balance) {
-      return res.status(400).json({
-        status: "Bad Request",
-        message: "Missing required fields: account_no, account_holder_name, bank_name, balance",
+      return res.status(422).json({
+        message: "Missing required fields!",
       })
     }
 
@@ -84,7 +76,6 @@ export const createBankAccount = async (req, res) => {
 
     if(!bankAccountExist.rows[0].exists) {
       return res.status(404).json({
-        status: "Not Fount",
         message: "Bank account not found.",
       })
     }
@@ -110,30 +101,174 @@ export const createBankAccount = async (req, res) => {
 
     if(transactionResult.rows.length === 0) {
       return res.status(500).json({
-        status: "Internal Server Error",
         message: "Failed to create initial deposit transaction",
       })
     }
 
     return res.status(201).json({
-      status: "Success",
       message: "Bank account created successfully.",
     })
 
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal Server Error",
       message: "An error occurred while creating the bank account.",
+    })
+  }
+}
+
+export const addMoneyToBank = async (req, res) => {
+  try {
+    const {
+      bank_account_id,
+      depost_amount
+    } = req.body;
+
+    if(!bank_account_id || !depost_amount) {
+      return res.status(422).json({
+        message: "Missing required fields!",
+      })
+    }
+
+    if(isNaN(transaction_amount)) {
+      return res.status(422).json({
+        message: "Invalid Amount.",
+      });
+    }
+
+    if(transaction_amount <= 0) {
+      return res.status(422).json({
+        message: "Amount cannot be 0."
+      })
+    }
+    
+    await db.query(
+      `UPDATE bank_accounts SET 
+        balance = balance + $1
+        WHERE id = $2`,
+      [depost_amount, bank_account_id]
+    );
+
+    return res.status(200).json({
+      message: "Amount deposted successfully.",
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "There was a problem depositing amount in your bank account."
+    })
+  }
+}
+
+export const transferMoneyToAccount = async (req, res) => {
+  try {
+    const {
+      receiver_bank_account_id,
+      sender_bank_account_id,
+      receiver_id,
+      sender_id,
+      receiver_name,
+      transfer_amount
+    } = req.body;
+
+    if(
+      !receiver_bank_account_id || 
+      !sender_bank_account_id || 
+      !receiver_id || 
+      !sender_id ||
+      !receiver_name ||
+      !transfer_amount
+    ) {
+      return res.status(422).json({
+        message: "Missing required fields!",
+      })
+    }
+
+    const receiverBankAccountExist = await db.query(
+      `SELECT * FROM bank_accounts WHERE id = $1;`,
+      [receiver_bank_account_id]
+    );
+
+    const senderBankAccountExist = await db.query(
+      `SELECT * FROM bank_accounts WHERE id = $1;`,
+      [receiver_bank_account_id]
+    );
+
+    if(receiverBankAccountExist.rows.length === 0) {
+      return res.sendStatus(204);
+    }
+
+    const receiver = receiverBankAccountExist.rows[0];
+    const sender = senderBankAccountExist.rows[0];
+
+    if(receiver.account_holder_name !== receiver_name) {
+      return res.status(422).json({
+        message: "Incorrect Account holder name.",
+      })
+    }
+
+    if(sender.balance < transfer_amount) {
+      return res.status(400).json({
+        message: "Transaction Failed. Insufficient account balance.",
+      })
+    }
+
+    await db.query("BEGIN");
+
+    try {
+      await db.query(
+        `UPDATE bank_accounts SET 
+          balance = balance + $1
+          WHERE id = $2`,
+        [transfer_amount, receiver_bank_account_id]
+      );
+
+      await db.query(
+        `UPDATE bank_accounts SET 
+          balance = balance - $1
+          WHERE id = $2`,
+        [transfer_amount, sender_bank_account_id]
+      );
+
+      const sender_description = `Transfer money to ${receiver_name}`;
+      const receiver_description = `Received money from ${req.user.name} (Transfer Money)`;
+
+      await db.query(
+        `INSERT INTO transactions (bank_account_id, transaction_amount, transaction_type, transaction_date, category_id, description, user_id) 
+        VALUES ($1, $2, $3, CURRENT_DATE, 1, $4, $5) RETURNING *;`,
+        [receiver_bank_account_id, transfer_amount, 'income', sender_description, receiver_id]
+      );
+
+      await db.query(
+        `INSERT INTO transactions (bank_account_id, transaction_amount, transaction_type, transaction_date, category_id, description, user_id) 
+        VALUES ($1, $2, $3, CURRENT_DATE, 1, $4, $5) RETURNING *;`,
+        [sender_bank_account_id, transfer_amount, 'expense', receiver_description, sender_id]
+      );
+
+      db.query("COMMIT");
+
+      return res.status(200).json({
+        message: "Amount Transfered successfully.",
+      });
+
+    } catch (error) {
+      await db.query("ROLLBACK");
+      console.log(error);
+      
+      return res.status(500).json({
+        message: "Transfer Failed. Try again.",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "There was a problem depositing amount in your bank account."
     })
   }
 }
 
 export const deleteBankAccount = async (req, res) => {
   try {
-    // const { id } = req.user;
+    const { id } = req.user;
     const bank_account_id = req.params.id;      
-    const id = 6;
 
     const bankAccountExist = await db.query(
       `SELECT EXISTS (SELECT * FROM bank_accounts WHERE user_id = $1 AND id = $2);`,
@@ -142,7 +277,6 @@ export const deleteBankAccount = async (req, res) => {
 
     if(!bankAccountExist.rows[0].exists) {
       return res.status(404).json({
-        status: "Not Fount",
         message: "Bank account not found.",
       })
     }
@@ -161,7 +295,6 @@ export const deleteBankAccount = async (req, res) => {
 
     if(deleteAccountResult.rowCount === 0) {
       return res.status(500).json({
-        status: "Internal Server Error",
         message: "An error occurred while deleting the bank account.",
       })
     }
@@ -171,7 +304,6 @@ export const deleteBankAccount = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      status: "Internal Server Error",
       message: "An error occurred while deleting the bank account.",
     })
   }

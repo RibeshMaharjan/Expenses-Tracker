@@ -10,4 +10,4 @@ const pool = new Pool({
   password: process.env.PG_PASSWORD
 });
 
-export const query = (text, params) => pool.query(text, params);
+export const query = (text, params) => pool.query(text, params)

@@ -14,7 +14,6 @@ export const getUser = async (req, res) => {
     
     if(!user) {
       return res.status(404).json({
-        status: "Not found",
         message: "User not found",
       })
     }
@@ -29,7 +28,6 @@ export const getUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status: "Internal server error",
       message: error.message,
     });
   }
@@ -46,22 +44,19 @@ export const changePassword = async(req, res) => {
     );
 
     if(!(currentPassword || newPassword || confirmPassword)) {
-      return res.status(400).json({
-        status: "Bad request",
+      return res.status(422).json({
         message: "Provide Required Fields!",
       })
     }
 
     if(!userExist.rowCount) {
       return res.status(404).json({
-        status: "Not Found",
         message: "User not found",
       })
     }
 
     if(newPassword !== confirmPassword) {
-      return res.status(400).json({
-        status: "Bad request",
+      return res.status(422).json({
         message: "New Passwords does not match",
       })
     }
@@ -69,8 +64,7 @@ export const changePassword = async(req, res) => {
     const isMatch = await comparePassword(currentPassword, userExist.rows[0].password)
 
     if(!isMatch) {
-      return res.status(401).json({
-        status: "Unauthorized",
+      return res.status(422).json({
         message: "Incorrect current password.",
       })
     }
@@ -85,14 +79,12 @@ export const changePassword = async(req, res) => {
     )
 
     return res.status(200).json({
-      status: "Success",
       message: "Password changed successfully",
     });
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status: "Internal server error",
       message: error.message,
     });
   }
@@ -111,14 +103,12 @@ export const updateUser = async(req, res) => {
 
     if(!userExist.rowCount) {
       return res.status(404).json({
-        status: "Not Found",
         message: "User not found",
       })
     }
 
     if(!(name || username || email)) {
-      return res.status(400).json({
-        status: "Bad request",
+      return res.status(422).json({
         message: "Provide Required Fields!",
       })
     }
@@ -137,14 +127,12 @@ export const updateUser = async(req, res) => {
     updatedUser.rows[0].password = undefined;
 
     return res.status(200).json({
-      status: "Success",
       message: "User information updated successfully",
       user: updatedUser.rows[0],
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status: "Internal server error",
       message: error.message,
     });
   }
