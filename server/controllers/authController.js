@@ -3,9 +3,9 @@ import { comparePassword, createToken, hashPassword } from "../utils/index.js";
 
 export const signupUser = async (req, res) => {
   try {
-    const { name, username, password, email } = req.body;
+    const { name, username, password, rePassword, email } = req.body;
 
-    if(!(name || username || password || email))  {
+    if(!(name || username || password || !rePassword || email))  {
       return res.status(422).json({
         message: "Provide Required Fields!",
       });
@@ -15,6 +15,12 @@ export const signupUser = async (req, res) => {
       'SELECT * FROM users WHERE email = $1',
       [email]
     );
+
+    if(password === rePassword) {
+      return res.status(422).json({
+        message: "Passwords does not match",
+      })
+    }
 
     if(userExist.rowCount) {
       console.log("User Already Exist");
