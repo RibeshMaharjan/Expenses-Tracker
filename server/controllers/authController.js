@@ -3,9 +3,12 @@ import { comparePassword, createToken, hashPassword } from "../utils/index.js";
 
 export const signupUser = async (req, res) => {
   try {
-    const { name, username, password, rePassword, email } = req.body;
+    const { fullname, username, password, confirmPassword, email } = req.body;
 
-    if(!(name || username || password || !rePassword || email))  {
+    console.log(req.body);
+    
+
+    if(!(fullname || username || password || !confirmPassword || email))  {
       return res.status(422).json({
         message: "Provide Required Fields!",
       });
@@ -16,7 +19,7 @@ export const signupUser = async (req, res) => {
       [email]
     );
 
-    if(password === rePassword) {
+    if(password !== confirmPassword) {
       return res.status(422).json({
         message: "Passwords does not match",
       })
@@ -33,7 +36,7 @@ export const signupUser = async (req, res) => {
 
     const user = await db.query(
       "INSERT INTO users (name, username, password, email, created_at) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *",
-      [name, username, hashPwd, email],
+      [fullname, username, hashPwd, email],
     );
 
     user.rows[0].password = undefined;
@@ -85,11 +88,11 @@ export const signinUser = async(req, res) => {
     user.password = undefined;
 
     const token = createToken(user);
+
     return res.status(200).json({
       message: "Login successfully",
       user,
-      token,
-    });
+    }).cookie('authToken', `Bearer ${token}`);
 
   } catch (error) {
     console.log(error);
