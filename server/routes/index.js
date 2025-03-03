@@ -15,8 +15,10 @@ router.use('/bankaccount', authenticationToken, bankAccountRoutes);
 router.use('/transaction', authenticationToken, transactionRoutes);
 router.use('/stock', authenticationToken, stockRoutes);
 router.use('/stocktransaction', authenticationToken, stockTransactionRoutes);
-router.get('/test', authenticationToken, (req, res) => {
-  res.send("<h1>Test Success</h1>")
+router.get('/test', (req, res) => {
+  res.status(200).json({
+    message: "Test Success",
 })
+});
 
 export default router;

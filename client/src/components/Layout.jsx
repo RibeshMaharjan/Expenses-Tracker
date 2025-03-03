@@ -1,15 +1,12 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
-
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Sidebar, { SidebarItem } from "../components/sidebar/sidebar";
-import MobileNav from "./MobileNav";
-
 import BankTransaction from "../pages/bankTransaction";
 import Bank from "../pages/banks";
 import Dashboard from "../pages/dashboard";
 import Setting from "../pages/setting";
 import Stock from "../pages/stock";
 import StockTransaction from "../pages/stockTransaction";
+import MobileNav from "./MobileNav";
 
 /* icon imports */
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -18,9 +15,15 @@ import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import ShowChartOutlinedIcon from "@mui/icons-material/ShowChartOutlined";
+import { useUserContext } from "../context/userContext";
 
-const Layout = ({ children }) => {
-  return (
+const RootLayout = () => {
+  const { user } = useUserContext();
+  // const [isLoggedIn, setIsLoggedIn] = useState(CookieExist("authToken"));
+
+  return !user ? (
+    <Navigate to="sign-in" />
+  ) : (
     <>
       <div className="flex flex-col md:flex-row w-full h-screen">
         <Sidebar>
@@ -28,6 +31,7 @@ const Layout = ({ children }) => {
             title="Home"
             icon={<DashboardOutlinedIcon />}
             link="/dashboard"
+            active
           ></SidebarItem>
           <SidebarItem
             title="My Banks"
@@ -38,7 +42,6 @@ const Layout = ({ children }) => {
             title="Bank Transaction"
             icon={<ReceiptOutlinedIcon />}
             link="/banktransaction"
-            active
           ></SidebarItem>
           <SidebarItem
             title="My Stocks"
@@ -56,16 +59,25 @@ const Layout = ({ children }) => {
             <MobileNav></MobileNav>
           </div>
         </div>
-        <Routes>
-          <Route path="/account-page" element={<Setting />} />
+        <Outlet />
+      </div>
+    </>
+  );
+};
+
+const Layout = () => {
+  return (
+    <>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route path="/account-page" element={<Setting />}></Route>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/banktransaction" element={<BankTransaction />} />
           <Route path="/stocktransaction" element={<StockTransaction />} />
           <Route path="/stock" element={<Stock />} />
           <Route path="/bankaccount" element={<Bank />} />
-        </Routes>
-        {/* {children} */}
-      </div>
+        </Route>
+      </Routes>
     </>
   );
 };

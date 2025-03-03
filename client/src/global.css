@@ -33,6 +33,10 @@
 
 
   /* Dashboard Active Tabs  */
+  .active {
+    @apply bg-gradient-to-r from-green-500 to-lime-400 text-white !important;
+  }
+
   .active-tab {
     @apply text-green-700 border-green-600;
   }

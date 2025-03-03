@@ -1,13 +1,15 @@
 import { validateToken } from "../utils/index.js";
 
 export const authenticationToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
 
-  if(token === null) res.status(401).json({
+  const authHeader = req.cookies?.authToken || req.headers['authorization'];
+  
+  if(authHeader === null) res.status(401).json({
     status: "Unauthorized",
     message: "Access Denied",
   })
+  
+  const token = authHeader.split(' ').pop();
 
   try {
     const payload = validateToken(token);
@@ -18,5 +20,6 @@ export const authenticationToken = (req, res, next) => {
       message: "Access Denied",
     })
   }
+
   next();
 }

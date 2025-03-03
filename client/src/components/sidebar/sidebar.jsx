@@ -68,22 +68,18 @@ export const SidebarItem = ({ title, icon, link, active }) => {
   const { expanded } = useContext(SidebarContext);
 
   return (
-    <li
-      className={`group relative flex items-center py-2 px-3 my-1 text-lg font-semibold rounded-md cursor-pointer transition-colors ${
-        active
-          ? "bg-gradient-to-r from-green-500 to-lime-400 text-white"
-          : "hover:bg-green-100 text-gray-600"
-      }`}
+    <NavLink
+      to={link}
+      className={`group relative flex items-center py-2 px-3 my-1 text-lg font-semibold rounded-md cursor-pointer text-gray-600 `}
     >
       {icon}
-      <NavLink
-        to={link}
+      <a
         className={`h-8 leading-8 overflow-hidden transition-all ${
           expanded ? "w-52 ml-3" : "w-0"
         }`}
       >
         {title}
-      </NavLink>
+      </a>
       {!expanded && (
         <div
           className="absolute left-full text-nowrap rounded-md px-2 py-2 ml-6 bg-green-200 text-green-800 leading-3 invisible opacity-20 z-10 -translate-x-3 transition-all
@@ -92,7 +88,7 @@ export const SidebarItem = ({ title, icon, link, active }) => {
           {title}
         </div>
       )}
-    </li>
+    </NavLink>
   );
 };
 

@@ -1,11 +1,80 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Button from "../../components/button.jsx";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import * as z from "zod";
+import { Form, FormButton, InputField } from "../../components/form.jsx";
+import Loader from "../../components/ui/loader.jsx";
+import { useUserContext } from "../../context/userContext.jsx";
+
+const SigninSchema = z.object({
+  email: z
+    .string({
+      required_error: "Email is required",
+    })
+    .min(1, { message: "Email is required" })
+    .email({
+      message: "Invalid email address",
+    }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
 
 const SignIn = () => {
-  const handleForm = (e) => {
-    e.preventDefault();
-    console.log("Button was clicked!");
+  // const [user, setUser] = useState();
+  // const [authToken, setAuthToken] = useState(GetCookie("authToken") || null);
+  // const [isLoggedIn, setIsLoggedIn] = useState();
+  const { user, addUser } = useUserContext();
+  const [loading, setLoading] = useState();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(SigninSchema),
+  });
+
+  const nagivate = useNavigate();
+
+  useEffect(() => {
+    !user && nagivate("/sign-in");
+  }, [user]);
+
+  const delay = (time) => {
+    return new Promise((resovle, reject) => {
+      setTimeout(() => {
+        resovle();
+      }, time * 1000);
+    });
+  };
+
+  const onSubmit = async (formData) => {
+    setLoading(true);
+    await delay(2);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/signin",
+        formData
+      );
+
+      if (response.status !== 200) {
+        toast.error(response.data.message);
+      }
+
+      const { user } = await response.data;
+
+      toast.success(response.data.message);
+      addUser(user);
+      setLoading(false);
+      nagivate("/dashboard");
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -22,7 +91,39 @@ const SignIn = () => {
             </p>
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6">
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <InputField
+                loading={loading}
+                id="email"
+                label="Email"
+                type="email"
+                placeholder="ex: example@gmail.com"
+                className=""
+                error={errors.email?.message}
+                {...register("email")}
+              />
+              <InputField
+                loading={loading}
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                className=""
+                error={errors.password?.message}
+                {...register("password")}
+              />
+              <FormButton
+                loading={loading}
+                buttonName={
+                  loading ? (
+                    <Loader label="Signing In" color="white" />
+                  ) : (
+                    "Sign In"
+                  )
+                }
+              />
+            </Form>
+            {/* <form className="space-y-6">
               <div className="">
                 <label htmlFor="email" className="block text-sm/6 font-medium">
                   Email
@@ -64,12 +165,12 @@ const SignIn = () => {
                   Sign In
                 </Button>
               </div>
-            </form>
+            </form> */}
 
             <p className="mt-10 text-center text-sm/6 text-gray-500">
               Don't have an account?{" "}
               <Link
-                to="/sign-in"
+                to="/sign-up"
                 className="font-semibold text-green-600 hover:text-green-500"
               >
                 Sign up

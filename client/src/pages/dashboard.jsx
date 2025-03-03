@@ -2,7 +2,6 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { createContext, useContext, useState } from "react";
 import BankTransactionTable from "../components/banktransactiontable";
 import Button from "../components/button";
-import Layout from "../components/Layout";
 import RightSidebar from "../components/RightSidebar";
 
 const activeTabContext = createContext();
@@ -31,7 +30,6 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <Layout> */}
       <div className="h-full w-full px-4 py-6 lg:px-6 lg:py-8">
         <div className="mb-4" id="dashboard-header">
           <h1 className="medi text-3xl lg:text-4xl font-bold">
