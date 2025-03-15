@@ -1,16 +1,18 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
-import React, { use } from "react";
 import Button from "./button";
+import {useUserContext} from "../context/UserContext.jsx";
 
-const RightSidebar = ({ user, banks, expenses }) => {
+const RightSidebar = ({ banks, expenses }) => {
   /*  const bankItems = React.Children.toArray(children).filter(
     (child) => child.props.type === "bank"
   );
   const expenseItems = React.Children.toArray(children).filter(
     (child) => child.props.type === "expense"
   ); */
+  const { user } = useUserContext();
+
 
   const handleClick = () => {
     console.log("clicked");
@@ -22,11 +24,11 @@ const RightSidebar = ({ user, banks, expenses }) => {
         <div className="profile-banner"></div>
         <div className="profile">
           <div className="profile-img">
-            <span>AM</span>
+            <span>{ user.initials }</span>
           </div>
           <div className="profile-details">
-            <h1 className="text-2xl font-bold">{user[0].username}</h1>
-            <p className="text-gray-600">{user[0].email}</p>
+            <h1 className="text-2xl font-bold">{user.name}</h1>
+            <p className="text-gray-600">{user.email}</p>
           </div>
         </div>
       </section>
@@ -49,7 +51,7 @@ const RightSidebar = ({ user, banks, expenses }) => {
           <div className="w-full">
             <ul className="">
               {banks.map((bank, index) => (
-                <BankItem key={index} name={bank.name} balance={bank.balance} />
+                <BankItem key={index} name={bank.bank_name} balance={bank.balance} />
               ))}
             </ul>
           </div>

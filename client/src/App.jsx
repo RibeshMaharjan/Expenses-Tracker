@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import "./App.css";
 import Layout from "./components/Layout";
-import { UserProvider } from "./context/userContext";
+import { UserProvider } from "./context/UserContext.jsx";
 import "./global.css";
 import SignUp from "./pages/auth/sigin-up";
 import SignIn from "./pages/auth/sign-in";

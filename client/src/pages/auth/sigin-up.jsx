@@ -5,7 +5,7 @@ import { set, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Form, FormButton, InputField } from "../../components/form.jsx";
+import { FormButton, InputField, MyForm } from "../../components/form.jsx";
 import Loader from "../../components/ui/loader.jsx";
 
 const RegisterSchema = z
@@ -71,15 +71,15 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/signup",
+        `${import.meta.env.VITE_SERVER_URL}/auth/signup`,
         formData
       );
 
       if (response.status !== 201) {
-        toast.error(response.data.message);
+        toast.error(await response.data.message);
       }
 
-      toast.success(response.data.message);
+      toast.success(await response.data.message);
       setLoading(false);
 
       setTimeout(() => {
@@ -100,12 +100,12 @@ const SignUp = () => {
           <h2 className="mt-10 font-poppins text-center text-3xl font-semibold">
             Sign Up
           </h2>
-          <p className="mt-2 text-center text-sm tracking-tight text-gray-800">
+          <p className="mt-2 text-center text-lg tracking-tight text-gray-800">
             Please enter your details
           </p>
         </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <Form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mt-10 mx-auto w-full max-w-sm">
+          <MyForm onSubmit={handleSubmit(onSubmit)}>
             <InputField
               loading={loading}
               id="fullname"
@@ -167,9 +167,9 @@ const SignUp = () => {
                 )
               }
             />
-          </Form>
+          </MyForm>
 
-          <p className="mt-10 text-center text-sm/6 text-gray-500">
+          <p className="mt-10 text-center text-base/6 text-gray-500">
             Already have an account?{" "}
             <Link
               to="/sign-in"

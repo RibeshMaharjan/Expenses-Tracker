@@ -9,7 +9,7 @@ export const authenticationToken = (req, res, next) => {
     message: "Access Denied",
   })
   
-  const token = authHeader.split(' ').pop();
+  const token = authHeader?.split(' ').pop();
 
   try {
     const payload = validateToken(token);
