@@ -1,33 +1,21 @@
 import { useEffect, useState} from "react";
 import RightSidebar from "../components/RightSidebar";
-import axios from "axios";
 import {useUserContext} from "../context/UserContext.jsx";
 import { toast } from "sonner";
 import PageLoader from "../components/ui/PageLoader.jsx";
 import BankSection from "../components/bank/Bank.jsx";
-import { useActiveTabContext} from "../context/ActiveTabContext.jsx";
-import Model from "../components/ui/Model.jsx";
+import {useBankContent} from "../context/BankContext.jsx";
+import {ActiveTabProvider} from "../context/ActiveTabContext.jsx";
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState('');
-  const [banks, setBanks] = useState([]);
-  const { user } = useUserContext();
-  const { toggleTab } = useActiveTabContext();
+  const [loading, setLoading] = useState(false);
+  const { banks, getBankAccounts } = useBankContent();
+  const {user} = useUserContext();
   useEffect(() => {
     setLoading(true);
     const getBanks = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/bankaccount`,
-          {
-            withCredentials: true,
-          });
-
-        if(response.data.status !== 200) {
-          toast.error(await response.data.message);
-        }
-
-        setBanks(await response.data.data);
-        toggleTab(await response.data.data[0].id);
+        await getBankAccounts();
       } catch (err) {
         console.log(err);
         toast.error(err.message);
@@ -38,7 +26,7 @@ const Dashboard = () => {
     getBanks();
   }, []);
 
-  if(loading) {
+  if (loading) {
     return <PageLoader/>
   }
 
@@ -53,10 +41,10 @@ const Dashboard = () => {
             Access & manage your account and transaction from single place.
           </p>
         </div>
-        <BankSection banks={ banks } />
+        <BankSection />
       </div>
       <RightSidebar
-        banks={ banks }
+        banks={ banks.slice(0, 3) }
         expenses={[
           {
             name: "Expense 1",
@@ -68,7 +56,6 @@ const Dashboard = () => {
           },
         ]}
       ></RightSidebar>
-      {/* </Layout> */}
     </>
   );
 };

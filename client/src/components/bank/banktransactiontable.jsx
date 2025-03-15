@@ -1,28 +1,4 @@
-const data = [
-  {
-    type: "income",
-    amount: "5600",
-    category: "salery",
-    date: "2024-02-14",
-    description: "Salery received",
-  },
-  {
-    type: "expense",
-    amount: "1500",
-    category: "salery",
-    date: "2024-02-14",
-    description: "Salery received",
-  },
-  {
-    type: "income",
-    amount: "2000",
-    category: "salery",
-    date: "2024-02-14",
-    description: "Salery received",
-  },
-];
-
-const BankTransactionTable = () => {
+const BankTransactionTable = ({ transactions }) => {
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -35,42 +11,48 @@ const BankTransactionTable = () => {
           </tr>
         </thead>
         <tbody className="">
-          {data.map((val, key) => {
-            return (
-              <tr key={key} className="text-lg even:bg-green-100">
-                <td className="px-2 py-4 min-w-24 font-semibold tracking-tight">
-                  <span
-                    className={
-                      val.type === "income" ? "text-green-700" : "text-red-700"
-                    }
-                  >
-                    <span className="me-1 font-extrabold text-lg">
-                      {val.type === "income" ? "+" : "-"}
+        {
+          transactions.length <= 0 ? (
+            <tr className='text-lg bg-gray-300'>
+              <td colspan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
+                <span>No Transaction</span>
+              </td>
+            </tr>
+          ) : (
+            transactions.map((val, key) => {
+              return (
+                <tr key={key} className={`text-lg ${
+                  val.transaction_type === "income" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                }`}>
+                  <td className="px-2 py-4 min-w-24 font-semibold tracking-tight">
+                    <span
+                      className={
+                        val.transaction_type === "income" ? "text-green-700" : "text-red-700"
+                      }
+                    >
+                      <span className="me-1 font-extrabold text-lg">
+                        {val.transaction_type === "income" ? "+" : "-"}
+                      </span>
+                      Rs. {val.transaction_amount}
                     </span>
-                    Rs. {val.amount}
-                  </span>
-                </td>
-                <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                  <span className="px-3 border-2 border-green-700 text-green-700 tracking-tight rounded-full before:content-['•'] before:mr-1.5 before:text-green-700 before:text-lg capitalize">
-                    {val.category}
-                  </span>
-                </td>
-                <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                  {val.date}
-                </td>
-                <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                  {val.description}
-                </td>
-              </tr>
-            );
-          })}
+                  </td>
+                  <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
+                    <span className="px-3 border-2 border-green-700 text-green-700 tracking-tight rounded-full before:content-['•'] before:mr-1.5 before:text-green-700 before:text-lg capitalize">
+                      {val.category}
+                    </span>
+                  </td>
+                  <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
+                    {val.transaction_date}
+                  </td>
+                  <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
+                    {val.description}
+                  </td>
+                </tr>
+              );
+            })
+          )
+        }
         </tbody>
-        {/* <tfoot>
-          <tr>
-            <td>Sum</td>
-            <td>$180</td>
-          </tr>
-        </tfoot> */}
       </table>
     </div>
   );

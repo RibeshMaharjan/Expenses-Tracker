@@ -68,7 +68,7 @@ export const signinUser = async(req, res) => {
       'SELECT * FROM users WHERE email = $1',
       [email]
     );
-q
+
     const user = result.rows[0];    
 
     if(!user) {
