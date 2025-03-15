@@ -17,6 +17,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import ShowChartOutlinedIcon from "@mui/icons-material/ShowChartOutlined";
 import { useUserContext } from "../context/UserContext.jsx";
 import {ActiveTabProvider} from "../context/ActiveTabContext.jsx";
+import {BankProvider} from "../context/BankContext.jsx";
 
 const RootLayout = () => {
   const { user } = useUserContext();
@@ -69,16 +70,18 @@ const RootLayout = () => {
 const Layout = () => {
   return (
     <>
-      <Routes>
-        <Route element={<RootLayout />}>
-          <Route path="/account-page" element={<Setting />}></Route>
-          <Route path="/dashboard" element={<ActiveTabProvider><Dashboard /></ActiveTabProvider>} />
-          <Route path="/banktransaction" element={<BankTransaction />} />
-          <Route path="/stocktransaction" element={<StockTransaction />} />
-          <Route path="/stock" element={<Stock />} />
-          <Route path="/bankaccount" element={<Bank />} />
-        </Route>
-      </Routes>
+      <BankProvider>
+        <Routes>
+          <Route element={<RootLayout />}>
+            <Route path="/account-page" element={<Setting />}></Route>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/banktransaction" element={<BankTransaction />} />
+            <Route path="/stocktransaction" element={<StockTransaction />} />
+            <Route path="/stock" element={<Stock />} />
+            <Route path="/bankaccount" element={<Bank />} />
+          </Route>
+        </Routes>
+      </BankProvider>
     </>
   );
 };

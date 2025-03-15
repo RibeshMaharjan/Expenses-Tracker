@@ -2,9 +2,8 @@ import BankTransactionTable from "./banktransactiontable.jsx";
 import {useActiveTabContext} from "../../context/ActiveTabContext.jsx";
 
 const BankContent = ({ bank }) => {
-  // const { toggleState, toggleTab } = useContext(activeTabContext);
-
   const { tabs } = useActiveTabContext();
+
   return (
     <div className={`${tabs === bank.id ? "active-content" : "hidden"}`}>
       <div
@@ -32,7 +31,7 @@ const BankContent = ({ bank }) => {
         </div>
       </div>
       <div className="" id="bank-account-transaction-table">
-        <BankTransactionTable></BankTransactionTable>
+        <BankTransactionTable transactions={bank.transactions}></BankTransactionTable>
       </div>
     </div>
   );

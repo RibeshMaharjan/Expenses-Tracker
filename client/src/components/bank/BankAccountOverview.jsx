@@ -8,6 +8,7 @@ import * as z from "zod";
 import Dialog from "../ui/Dialog.jsx";
 import Loader from "../ui/loader.jsx";
 import axios from "axios";
+import {useBankContent} from "../../context/BankContext.jsx";
 
 const AddBankSchema = z.object({
   account_no: z
@@ -34,16 +35,17 @@ const AddBankSchema = z.object({
     .refine(val => val!==0, { message: "Balance must be positive" }),
 })
 
-const BankAccountOverview = ({ banks }) => {
+const BankAccountOverview = () => {
+  const { banks, getBankAccounts } = useBankContent();
   const [totalbanks, setTotalbanks] = useState(banks.length);
   const [totalBalance, setTotalBalance] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(AddBankSchema),
   })
@@ -59,12 +61,14 @@ const BankAccountOverview = ({ banks }) => {
         },
       )
 
-      if(response.data.status !== 201) {
-        return toast.error(response.data.message);
+      if(response.status !== 201) {
+        toast.error(response.data.message);
       }
 
       toast.success(response.data.message);
+      await getBankAccounts();
       setOpen(false);
+      reset();
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
@@ -74,6 +78,7 @@ const BankAccountOverview = ({ banks }) => {
   }
 
   useEffect(() => {
+    setTotalbanks(banks.length);
     if(totalbanks > 0) {
       setTotalBalance(banks.reduce((totalBankBalance, currBank) => {
         return totalBankBalance + parseFloat(currBank.balance);
@@ -155,8 +160,6 @@ const BankAccountOverview = ({ banks }) => {
               />
             </MyForm>
           </Dialog>
-
-          {/*<DialogButton onClick={() => setOpen(true)} />*/}
 
           <button onClick={() => setOpen(true)} type='button' className="h-fit px-1 py-1.5 text-green-600 text-base/6 font-bold rounded-md hover:bg-green-200">
             <AddOutlinedIcon sx={{ fontSize: 20 }} />

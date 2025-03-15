@@ -1,11 +1,48 @@
 import * as db from "../config/db.js";
 
-export const getTranscation = async (req, res) => {
+export const getAllTranscations = async (req, res) => {
   try {
     const { id } = req.user;
 
     const getTranscationResult = await db.query(
-      `SELECT * FROM transactions WHERE user_id =  $1`,
+      `SELECT * FROM transactions WHERE user_id = $1 AND bank_account_id = $2`,
+      [id, bank_account_id]
+    );
+
+    if(getTranscationResult.rowCount === 0) {
+      return res.sendStatus(204);
+    }
+
+    return res.status(200).json({
+        data: getTranscationResult.rows,
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "There was a problem retrieving your bank accounts",
+    });
+  }
+}
+
+export const getTranscation = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    /*const getTranscationResult = await db.query(
+      `SELECT *,name FROM transactions JOIN transaction_categories WHERE transactions.user_id =  $1`,
+      [id]
+    );*/
+    const getTranscationResult = await db.query(
+      `SELECT transactions.id as id, 
+                   transactions.user_id as user_id, 
+                   bank_account_id, 
+                   transaction_amount, 
+                   transaction_type, 
+                   transaction_date, 
+                   description, 
+                   name as category 
+            FROM transactions JOIN transaction_categories ON transactions.category_id = transaction_categories.id 
+            WHERE transactions.user_id = $1`,
       [id]
     );
 

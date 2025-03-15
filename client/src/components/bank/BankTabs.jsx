@@ -1,7 +1,15 @@
-import {ActiveTabProvider, useActiveTabContext} from "../../context/ActiveTabContext.jsx";
+import {useActiveTabContext} from "../../context/ActiveTabContext.jsx";
+import {useEffect} from "react";
 
-const BankTabs = ({ bank }) => {
+const BankTabs = ({ bank, index }) => {
   const { tabs, toggleTab } = useActiveTabContext();
+
+  useEffect(() => {
+    if(index === 0) {
+      toggleTab(bank.id);
+    }
+  }, [bank]);
+
   return (
     <li
       className={`py-1 px-1 border-b-2  cursor-pointer ${
