@@ -68,7 +68,7 @@ export const signinUser = async(req, res) => {
       'SELECT * FROM users WHERE email = $1',
       [email]
     );
-
+q
     const user = result.rows[0];    
 
     if(!user) {
@@ -89,10 +89,12 @@ export const signinUser = async(req, res) => {
 
     const token = createToken(user);
 
-    return res.status(200).json({
-      message: "Login successfully",
-      user,
-    }).cookie('authToken', `Bearer ${token}`);
+    return res.status(200)
+              .cookie('authToken', `Bearer ${token}`)
+              .json({
+                message: "Login successfully",
+                user,
+              });
 
   } catch (error) {
     console.log(error);

@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Form, FormButton, InputField } from "../../components/form.jsx";
+import { FormButton, InputField, MyForm } from "../../components/form.jsx";
 import Loader from "../../components/ui/loader.jsx";
-import { useUserContext } from "../../context/userContext.jsx";
+import { useUserContext } from "../../context/UserContext.jsx";
 
 const SigninSchema = z.object({
   email: z
@@ -25,6 +25,8 @@ const SignIn = () => {
   // const [user, setUser] = useState();
   // const [authToken, setAuthToken] = useState(GetCookie("authToken") || null);
   // const [isLoggedIn, setIsLoggedIn] = useState();
+  // const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+
   const { user, addUser } = useUserContext();
   const [loading, setLoading] = useState();
 
@@ -56,24 +58,27 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/signin",
-        formData
+        `${import.meta.env.VITE_SERVER_URL}/auth/signin`,
+        formData,
+        {
+          withCredentials: true,
+        }
       );
 
       if (response.status !== 200) {
         toast.error(response.data.message);
       }
 
-      const { user } = await response.data;
+      const { user, message } = await response.data;
 
-      toast.success(response.data.message);
+      toast.success(message);
       addUser(user);
-      setLoading(false);
       nagivate("/dashboard");
     } catch (error) {
-      setLoading(false);
       console.log(error);
       toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,7 +96,7 @@ const SignIn = () => {
             </p>
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <MyForm onSubmit={handleSubmit(onSubmit)}>
               <InputField
                 loading={loading}
                 id="email"
@@ -122,7 +127,7 @@ const SignIn = () => {
                   )
                 }
               />
-            </Form>
+            </MyForm>
             {/* <form className="space-y-6">
               <div className="">
                 <label htmlFor="email" className="block text-sm/6 font-medium">

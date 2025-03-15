@@ -10,11 +10,13 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 */
 import { createContext, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
+import {useUserContext} from "../../context/UserContext.jsx";
 
 const SidebarContext = createContext();
 
 const Sidebar = ({ children }) => {
   const [expanded, setExpanded] = useState(true);
+  const { user } = useUserContext();
 
   return (
     <>
@@ -42,7 +44,7 @@ const Sidebar = ({ children }) => {
 
           <div className="border-t flex p-3">
             <div className="w-10 h-10 rounded-md bg-green-200 flex justify-center items-center">
-              AM
+              { user.initials }
             </div>
             <div
               className={`flex justify-between items-center 
@@ -52,8 +54,8 @@ const Sidebar = ({ children }) => {
             `}
             >
               <div className="leading-4">
-                <h4 className="font-semibold">Asura Maharjan</h4>
-                <span className="text-xs to-gray-600">example@gmail.comm</span>
+                <h4 className="font-semibold">{ user.name }</h4>
+                <span className="text-xs to-gray-600">{ user.email }</span>
               </div>
               <LogoutOutlinedIcon />
             </div>
@@ -73,13 +75,13 @@ export const SidebarItem = ({ title, icon, link, active }) => {
       className={`group relative flex items-center py-2 px-3 my-1 text-lg font-semibold rounded-md cursor-pointer text-gray-600 `}
     >
       {icon}
-      <a
+      <div
         className={`h-8 leading-8 overflow-hidden transition-all ${
           expanded ? "w-52 ml-3" : "w-0"
         }`}
       >
         {title}
-      </a>
+      </div>
       {!expanded && (
         <div
           className="absolute left-full text-nowrap rounded-md px-2 py-2 ml-6 bg-green-200 text-green-800 leading-3 invisible opacity-20 z-10 -translate-x-3 transition-all

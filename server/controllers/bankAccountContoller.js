@@ -14,8 +14,7 @@ export const getAllBankAccount = async (req, res) => {
         data: [], // Return empty array as no data was found
       })
     }
-    
-    
+
     return res.status(200).json({
       data: allBankAccount.rows, // Return array of bank accounts
     })
@@ -25,7 +24,6 @@ export const getAllBankAccount = async (req, res) => {
     return res.status(500).json({
       message: "There was a problem retrieving your bank accounts",
     })
-    
   }
 }
 
@@ -74,19 +72,15 @@ export const createBankAccount = async (req, res) => {
       [id, account_no]
     );
 
-    if(!bankAccountExist.rows[0].exists) {
-      return res.status(404).json({
-        message: "Bank account not found.",
+    if(bankAccountExist.rows[0].exists) {
+      return res.status(422).json({
+        message: "Bank account already exists.",
       })
     }
 
     const result = await db.query(
-      `UPDATE bank_accounts SET 
-        account_no = $1,
-        account_holder_name = $2,
-        bank_name = $3,
-        balance = $4,
-      VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+      `INSERT INTO bank_accounts (user_id, account_no, account_holder_name, bank_name, balance) 
+            VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
       [id, account_no, account_holder_name, bank_name, balance]
     );
     

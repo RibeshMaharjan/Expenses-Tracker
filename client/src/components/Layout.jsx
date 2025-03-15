@@ -15,7 +15,8 @@ import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import ShowChartOutlinedIcon from "@mui/icons-material/ShowChartOutlined";
-import { useUserContext } from "../context/userContext";
+import { useUserContext } from "../context/UserContext.jsx";
+import {ActiveTabProvider} from "../context/ActiveTabContext.jsx";
 
 const RootLayout = () => {
   const { user } = useUserContext();
@@ -71,7 +72,7 @@ const Layout = () => {
       <Routes>
         <Route element={<RootLayout />}>
           <Route path="/account-page" element={<Setting />}></Route>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<ActiveTabProvider><Dashboard /></ActiveTabProvider>} />
           <Route path="/banktransaction" element={<BankTransaction />} />
           <Route path="/stocktransaction" element={<StockTransaction />} />
           <Route path="/stock" element={<Stock />} />
@@ -79,35 +80,6 @@ const Layout = () => {
         </Route>
       </Routes>
     </>
-  );
-};
-
-export const BankAccountOverview = () => {
-  return (
-    <div
-      className="flex flex-col lg:flex-row mb-4 border border-1 rounded-md shadow-sm px-3 py-3"
-      id="bank-account-overview-section"
-    >
-      <div className="w-full lg:w-32 mb-4 lg:mb-0" id="balance-graph">
-        Circle Graph
-      </div>
-      <div className="flex ml-0 lg:ml-4 w-full" id="bank-account-overview">
-        <div className="flex-grow text-lg font-bold" id="bank-account-counts">
-          <span>{"3"} Bank Accounts</span>
-          <div className="mt-auto" id="bank-account-total-amount">
-            <span className="text-base text-gray-600">Total Balance</span>
-            <div className="text-2xl font-extrabold" id="bank-account-balance">
-              Rs. {"20,000"}
-            </div>
-          </div>
-        </div>
-
-        <button className="h-fit px-1 py-1.5 text-green-600 text-base/6 font-bold rounded-md hover:bg-green-200">
-          <AddOutlinedIcon sx={{ fontSize: 20 }} />
-          <span className="ms-1">Add Bank</span>
-        </button>
-      </div>
-    </div>
   );
 };
 

@@ -5,10 +5,15 @@ const UserContext = createContext();
 export const useUserContext = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || []);
 
   const addUser = (userInfo) => {
-    setUser(userInfo);
+    const info = {
+      ...userInfo,
+      initials: userInfo.name.split(' ').map(init => init[0]).join(''),
+    }
+    setUser(info);
+    localStorage.setItem('user', JSON.stringify(info));
   };
 
   const removeUser = () => {
