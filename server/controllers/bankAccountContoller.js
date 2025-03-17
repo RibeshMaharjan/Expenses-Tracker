@@ -16,13 +16,13 @@ export const getAllBankAccount = async (req, res) => {
     }
 
     return res.status(200).json({
-      data: allBankAccount.rows, // Return array of bank accounts
+      data: allBankAccount.rows, // Return array of home accounts
     })
 
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     })
   }
 }
@@ -51,7 +51,7 @@ export const getBankAccount = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank account",
+      message: "There was a problem retrieving your home account",
     })
   }
 }
@@ -106,7 +106,7 @@ export const createBankAccount = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "An error occurred while creating the bank account.",
+      message: "An error occurred while creating the home account.",
     })
   }
 }
@@ -148,7 +148,7 @@ export const addMoneyToBank = async (req, res) => {
     })
   } catch (error) {
     return res.status(500).json({
-      message: "There was a problem depositing amount in your bank account."
+      message: "There was a problem depositing amount in your home account."
     })
   }
 }
@@ -254,7 +254,7 @@ export const transferMoneyToAccount = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({
-      message: "There was a problem depositing amount in your bank account."
+      message: "There was a problem depositing amount in your home account."
     })
   }
 }
@@ -289,7 +289,7 @@ export const deleteBankAccount = async (req, res) => {
 
     if(deleteAccountResult.rowCount === 0) {
       return res.status(500).json({
-        message: "An error occurred while deleting the bank account.",
+        message: "An error occurred while deleting the home account.",
       })
     }
 
@@ -298,7 +298,7 @@ export const deleteBankAccount = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "An error occurred while deleting the bank account.",
+      message: "An error occurred while deleting the home account.",
     })
   }
 }

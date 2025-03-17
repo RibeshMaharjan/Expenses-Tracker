@@ -23,6 +23,7 @@ export const BankProvider = ({ children }) => {
       });
 
     if(response.status !== 200) {
+      console.log("runnnign");
       toast.error(await response.data.message);
     }
 

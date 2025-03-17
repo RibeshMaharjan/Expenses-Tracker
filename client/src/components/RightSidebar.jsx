@@ -6,7 +6,7 @@ import {useUserContext} from "../context/UserContext.jsx";
 
 const RightSidebar = ({ banks, expenses }) => {
   /*  const bankItems = React.Children.toArray(children).filter(
-    (child) => child.props.type === "bank"
+    (child) => child.props.type === "home"
   );
   const expenseItems = React.Children.toArray(children).filter(
     (child) => child.props.type === "expense"

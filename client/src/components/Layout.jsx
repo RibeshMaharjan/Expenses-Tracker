@@ -27,7 +27,7 @@ const RootLayout = () => {
     <Navigate to="sign-in" />
   ) : (
     <>
-      <div className="flex flex-col md:flex-row w-full h-screen">
+      <div className="flex flex-col lg:flex-row w-full h-screen">
         <Sidebar>
           <SidebarItem
             title="Home"
@@ -56,7 +56,7 @@ const RootLayout = () => {
             link="/stocktransaction"
           ></SidebarItem>
         </Sidebar>
-        <div className="flex flex-col md:hidden size-full">
+        <div className="flex flex-col lg:hidden size-full">
           <div className="flex flex-col p-4 pb-2 mx-3 rounded-md shadow-lg bg-white">
             <MobileNav></MobileNav>
           </div>
