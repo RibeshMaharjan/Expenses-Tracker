@@ -5,7 +5,8 @@ export const getStockTranscation = async (req, res) => {
     const { id } = req.user;
 
     const getStockTranscationResult = await db.query(
-      `SELECT * FROM stock_transactions WHERE user_id =  $1`,
+      // `SELECT * FROM stock_transactions WHERE user_id =  $1`,
+      `SELECT symbol, st.quantity as quantity, price, transaction_type, brokerage_account_no, bank_name, transaction_date FROM stock_transactions st JOIN brokerage_accounts ba on ba.id = st.brokerage_account_id join stocks s on s.id = st.stock_id JOIN bank_accounts b on b.id = st.bank_account_id WHERE st.user_id = $1;`,
       [id]
     );
 
@@ -20,7 +21,7 @@ export const getStockTranscation = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     });
   }
 }

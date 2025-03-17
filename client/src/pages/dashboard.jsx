@@ -3,14 +3,17 @@ import RightSidebar from "../components/RightSidebar";
 import {useUserContext} from "../context/UserContext.jsx";
 import { toast } from "sonner";
 import PageLoader from "../components/ui/PageLoader.jsx";
-import BankSection from "../components/bank/Bank.jsx";
+import BankSection from "../components/home/Bank.jsx";
+import { useNavigate } from "react-router-dom";
 import {useBankContent} from "../context/BankContext.jsx";
-import {ActiveTabProvider} from "../context/ActiveTabContext.jsx";
+import PanelHeader, {MainHeaderContent, SubHeaderContent} from "../components/panel/PanelHeader.jsx";
+import Panel from "../components/panel/Panel.jsx";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const { banks, getBankAccounts } = useBankContent();
   const {user} = useUserContext();
+  const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     const getBanks = async () => {
@@ -18,7 +21,10 @@ const Dashboard = () => {
         await getBankAccounts();
       } catch (err) {
         console.log(err);
-        toast.error(err.message);
+        if(err.response.status === 401) {
+          navigate('/sign-in');
+        }
+        toast.error(err.response.data.message);
       } finally {
         setLoading(false);
       }
@@ -32,17 +38,19 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="h-full w-full px-4 py-6 lg:px-6 lg:py-8">
-        <div className="mb-4" id="dashboard-header">
-          <h1 className="medi text-3xl lg:text-4xl font-bold">
-            Welcome, <span className="text-green-600 capitalize">{ user.username }</span>
-          </h1>
-          <p className="text-sm text-gray-600">
-            Access & manage your account and transaction from single place.
-          </p>
-        </div>
+      <Panel>
+        <PanelHeader>
+          <MainHeaderContent>
+            <h1>Welcome, <span className="text-green-600 capitalize">{ user?.username }</span></h1>
+          </MainHeaderContent>
+          <SubHeaderContent>
+            <p className="text-gray-600">
+              Access & manage your account and transaction from single place.
+            </p>
+          </SubHeaderContent>
+        </PanelHeader>
         <BankSection />
-      </div>
+      </Panel>
       <RightSidebar
         banks={ banks.slice(0, 3) }
         expenses={[

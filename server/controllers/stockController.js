@@ -20,7 +20,7 @@ export const getStock = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     });
   }
 }
@@ -128,7 +128,7 @@ export const addStock = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     });
   }
 }
@@ -168,7 +168,7 @@ export const deleteStock = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "An error occurred while deleting the bank account.",
+      message: "An error occurred while deleting the home account.",
     })
   }
 } */

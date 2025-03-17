@@ -19,7 +19,7 @@ export const getAllTranscations = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     });
   }
 }
@@ -57,7 +57,7 @@ export const getTranscation = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your bank accounts",
+      message: "There was a problem retrieving your home accounts",
     });
   }
 }

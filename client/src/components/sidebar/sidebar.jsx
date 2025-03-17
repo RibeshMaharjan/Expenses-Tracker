@@ -20,7 +20,7 @@ const Sidebar = ({ children }) => {
 
   return (
     <>
-      <aside className="h-screen w-0 overflow-hidden md:w-auto md:overflow-visible">
+      <aside className="h-screen w-0 overflow-hidden lg:w-auto lg:overflow-visible">
         <nav className="h-full flex flex-col bg-white border-r shadow-sm">
           <div className="p-4 pb-2 flex justify-between items-center">
             <h1
@@ -49,7 +49,7 @@ const Sidebar = ({ children }) => {
             <div
               className={`flex justify-between items-center 
             text-nowrap overflow-hidden transition-all ${
-              expanded ? "w-52 ml-3" : "w-0"
+              expanded ? "w-44 2xl:w-56 ml-3" : "w-0"
             }
             `}
             >
@@ -72,16 +72,17 @@ export const SidebarItem = ({ title, icon, link, active }) => {
   return (
     <NavLink
       to={link}
-      className={`group relative flex items-center py-2 px-3 my-1 text-lg font-semibold rounded-md cursor-pointer text-gray-600 `}
+      className={`group relative flex items-center py-2 px-3 my-1 text-base 2xl:text-lg font-semibold rounded-md cursor-pointer text-gray-600 `}
     >
       {icon}
       <div
         className={`h-8 leading-8 overflow-hidden transition-all ${
-          expanded ? "w-52 ml-3" : "w-0"
+          expanded ? "w-44 2xl:w-56   ml-3" : "w-0"
         }`}
       >
         {title}
-      </div>
+      </div
+>
       {!expanded && (
         <div
           className="absolute left-full text-nowrap rounded-md px-2 py-2 ml-6 bg-green-200 text-green-800 leading-3 invisible opacity-20 z-10 -translate-x-3 transition-all
