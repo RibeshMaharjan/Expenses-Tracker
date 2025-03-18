@@ -1,21 +1,21 @@
 import * as db from "../config/db.js";
 
-export const getStockTranscation = async (req, res) => {
+export const getStockTransaction = async (req, res) => {
   try {
     const { id } = req.user;
 
-    const getStockTranscationResult = await db.query(
+    const getStockTransactionResult = await db.query(
       // `SELECT * FROM stock_transactions WHERE user_id =  $1`,
-      `SELECT symbol, st.quantity as quantity, price, transaction_type, brokerage_account_no, bank_name, transaction_date FROM stock_transactions st JOIN brokerage_accounts ba on ba.id = st.brokerage_account_id join stocks s on s.id = st.stock_id JOIN bank_accounts b on b.id = st.bank_account_id WHERE st.user_id = $1;`,
+      `SELECT st.id as id, symbol, st.quantity as quantity, st.price as transaction_amount, transaction_type, brokerage_account_no, bank_name, transaction_date FROM stock_transactions st JOIN brokerage_accounts ba on ba.id = st.brokerage_account_id join stocks s on s.id = st.stock_id JOIN bank_accounts b on b.id = st.bank_account_id WHERE st.user_id = $1;`,
       [id]
     );
 
-    if(getStockTranscationResult.rowCount === 0) {
+    if(getStockTransactionResult.rowCount === 0) {
       return res.sendStatus(204);
     }
 
     return res.status(200).json({
-        data: getStockTranscationResult.rows,
+        data: getStockTransactionResult.rows,
       }
     )
   } catch (error) {
@@ -26,11 +26,11 @@ export const getStockTranscation = async (req, res) => {
   }
 }
 
-export const createStockTranscation = async (req, res) => {
+export const createStockTransaction = async (req, res) => {
   try {
-    // const { id } = req.user;
+    const { id } = req.user;
 
-    const id = 6;
+    // const id = 6;
 
     const { 
       brokerage_account_id,

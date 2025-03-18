@@ -36,7 +36,7 @@ const AddBankSchema = z.object({
 })
 
 const BankAccountOverview = () => {
-  const { banks, getBankAccounts } = useBankContent();
+  const { banks } = useBankContent();
   const [totalbanks, setTotalbanks] = useState(banks.length);
   const [totalBalance, setTotalBalance] = useState(0);
   const [open, setOpen] = useState(false);
@@ -66,7 +66,6 @@ const BankAccountOverview = () => {
       }
 
       toast.success(response.data.message);
-      await getBankAccounts();
       setOpen(false);
       reset();
     } catch (error) {

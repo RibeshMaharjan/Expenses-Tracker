@@ -2,10 +2,18 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Loader from "../ui/loader.jsx";
 import {toast} from "sonner";
+import {useStockContent} from "../../context/StockContext.jsx";
 
-const StockTransactionTable = ({ stockTransactions }) => {
-
+const StockTransactionTable = () => {
+  const { loading, stockTransactions } = useStockContent();
   console.log(stockTransactions);
+
+  if(loading) return (
+    <div className={`mx-auto`}>
+      <Loader />
+    </div>
+  );
+
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -39,7 +47,7 @@ const StockTransactionTable = ({ stockTransactions }) => {
                       {val.quantity}
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                    {val.price}
+                    {val.transaction_amount}
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
                     {val.transaction_type}

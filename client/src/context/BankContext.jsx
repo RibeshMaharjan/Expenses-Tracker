@@ -7,33 +7,41 @@ const BankContext = createContext();
 export const useBankContent = () =>  useContext(BankContext);
 
 export const BankProvider = ({ children }) => {
-
+  const [loading, setLoading] = useState(false);
   const [banks, setBanks] = useState([]);
 
   const getBankAccounts = async () => {
-    const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/bankaccount`,
-      {
-        withCredentials: true,
+    try {
+      setLoading(true);
+      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/bankaccount`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transaction/`,
+        {
+          withCredentials: true,
+        });
+
+      if(response.status !== 200) {
+        toast.error(response.data.message);
       }
-    );
 
-    const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transaction/`,
-      {
-        withCredentials: true,
-      });
+      const bankAndTransactions = response.data.data.map(bank => {
+        return {
+          ...bank,
+          transactions: transactionResponse.data.data.filter(transaction => transaction.bank_account_id == bank.id),
+        }
+      })
 
-    if(response.status !== 200) {
-      console.log("runnnign");
-      toast.error(await response.data.message);
+      setBanks(bankAndTransactions);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
-
-    const bankAndTransactions = await response.data.data.map(bank => {
-      return {
-        ...bank,
-        transactions: transactionResponse.data.data.filter(transaction => transaction.bank_account_id == bank.id),
-      }
-    })
-    setBanks(bankAndTransactions);
   }
 
   const setBankAccounts = ({ banks }) => {
@@ -41,6 +49,7 @@ export const BankProvider = ({ children }) => {
   }
 
   const value = {
+    loading,
     banks,
     getBankAccounts,
     setBankAccounts,

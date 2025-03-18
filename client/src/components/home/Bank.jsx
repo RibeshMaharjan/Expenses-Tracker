@@ -8,7 +8,6 @@ import {useBankContent} from "../../context/BankContext.jsx";
 const BankSection = () => {
   const { banks } = useBankContent();
 
-
   return (
     <>
       <BankAccountOverview />

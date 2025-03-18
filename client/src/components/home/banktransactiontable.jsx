@@ -1,3 +1,5 @@
+import {useBankContent} from "../../context/BankContext.jsx";
+
 const BankTransactionTable = ({ transactions }) => {
   return (
     <div className="" id="table-container">
@@ -12,14 +14,14 @@ const BankTransactionTable = ({ transactions }) => {
         </thead>
         <tbody className="">
         {
-          transactions.length <= 0 ? (
+          transactions?.length <= 0 ? (
             <tr className='text-lg bg-gray-300'>
-              <td colspan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
+              <td colSpan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
                 <span>No Transaction</span>
               </td>
             </tr>
           ) : (
-            transactions.map((val, key) => {
+            transactions?.map((val, key) => {
               return (
                 <tr key={key} className={`text-lg ${
                   val.transaction_type === "income" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"

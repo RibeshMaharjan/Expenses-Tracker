@@ -8,15 +8,17 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 /* 
   react imports
 */
-import { createContext, useContext, useState } from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import { NavLink } from "react-router-dom";
 import {useUserContext} from "../../context/UserContext.jsx";
+import {useStockContent} from "../../context/StockContext.jsx";
 
 const SidebarContext = createContext();
 
 const Sidebar = ({ children }) => {
   const [expanded, setExpanded] = useState(true);
   const { user } = useUserContext();
+
 
   return (
     <>

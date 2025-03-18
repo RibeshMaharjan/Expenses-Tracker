@@ -1,5 +1,6 @@
 import BankTransactionTable from "./banktransactiontable.jsx";
 import {useActiveTabContext} from "../../context/ActiveTabContext.jsx";
+import {useState} from "react";
 
 const BankContent = ({ bank }) => {
   const { tabs } = useActiveTabContext();
@@ -31,7 +32,7 @@ const BankContent = ({ bank }) => {
         </div>
       </div>
       <div className="" id="bank-account-transaction-table">
-        <BankTransactionTable transactions={bank.transactions}></BankTransactionTable>
+        <BankTransactionTable transactions={ bank.transactions } />
       </div>
     </div>
   );

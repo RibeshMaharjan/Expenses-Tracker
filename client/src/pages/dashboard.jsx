@@ -10,27 +10,8 @@ import PanelHeader, {MainHeaderContent, SubHeaderContent} from "../components/pa
 import Panel from "../components/panel/Panel.jsx";
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState(false);
-  const { banks, getBankAccounts } = useBankContent();
+  const { banks, loading } = useBankContent();
   const {user} = useUserContext();
-  const navigate = useNavigate();
-  useEffect(() => {
-    setLoading(true);
-    const getBanks = async () => {
-      try {
-        await getBankAccounts();
-      } catch (err) {
-        console.log(err);
-        if(err.response.status === 401) {
-          navigate('/sign-in');
-        }
-        toast.error(err.response.data.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getBanks();
-  }, []);
 
   if (loading) {
     return <PageLoader/>
@@ -41,7 +22,7 @@ const Dashboard = () => {
       <Panel>
         <PanelHeader>
           <MainHeaderContent>
-            <h1>Welcome, <span className="text-green-600 capitalize">{ user?.username }</span></h1>
+            Welcome, <span className="text-green-600 capitalize">{ user?.username }</span>
           </MainHeaderContent>
           <SubHeaderContent>
             <p className="text-gray-600">

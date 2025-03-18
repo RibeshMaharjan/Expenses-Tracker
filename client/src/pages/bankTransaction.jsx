@@ -5,6 +5,9 @@ import Button from "../components/button.jsx";
 import BankInfoCard from "../components/banktransaction/BankInfoCard.jsx";
 import BankTransactionTable from "../components/home/banktransactiontable.jsx";
 import {useBankContent} from "../context/BankContext.jsx";
+import Loader from "../components/ui/loader.jsx";
+import PageLoader from "../components/ui/PageLoader.jsx";
+import dialog from "../components/ui/Dialog.jsx";
 
 const BankTransaction = () => {
   const {banks} = useBankContent();
@@ -40,7 +43,7 @@ const BankTransaction = () => {
               View All
             </Button>*/}
           </div>
-          <BankTransactionTable transactions={banks[0].transactions} />
+          <BankTransactionTable transactions={banks[0]?.transactions} />
         </section>
       </Panel>
     </>

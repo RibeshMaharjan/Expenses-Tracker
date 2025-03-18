@@ -1,21 +1,19 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
-import Loader from "../ui/loader.jsx";
-import {toast} from "sonner";
+import {useStockContent} from "../../context/StockContext.jsx";
 
-const StockTable = ({ stocks }) => {
+const StockTable = () => {
+  const { stocks } = useStockContent();
   console.log(stocks);
 
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
         <thead className="bg-gray-100 text-left text-gray-600 border-b-2">
-        <tr>
-          <th className="py-2 px-4">Symbol</th>
-          <th className="px-4">Quantity</th>
-          <th className="px-4">Last Updated Price</th>
-          <th className="px-4">Total Value</th>
-        </tr>
+          <tr>
+            <th className="py-2 px-4">Symbol</th>
+            <th className="px-4">Quantity</th>
+            <th className="px-4">Last Updated Price</th>
+            <th className="px-4">Total Value</th>
+          </tr>
         </thead>
         <tbody className="">
         {
