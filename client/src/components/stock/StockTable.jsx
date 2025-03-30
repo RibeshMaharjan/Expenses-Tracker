@@ -1,8 +1,14 @@
 import {useStockContent} from "../../context/StockContext.jsx";
+import Loader from "../ui/loader.jsx";
 
 const StockTable = () => {
-  const { stocks } = useStockContent();
-  console.log(stocks);
+  const { loading, stocks } = useStockContent();
+
+  if(loading) return (
+    <div className={`mx-auto`}>
+      <Loader />
+    </div>
+  );
 
   return (
     <div className="" id="table-container">
@@ -17,16 +23,16 @@ const StockTable = () => {
         </thead>
         <tbody className="">
         {
-          stocks.length <= 0 ? (
+          stocks?.length <= 0 ? (
             <tr className='text-lg bg-gray-300'>
               <td colSpan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
                 <span>No Transaction</span>
               </td>
             </tr>
           ) : (
-            stocks.map((val, key) => {
+            stocks?.map((val, key) => {
               return (
-                <tr key={key} className={`text-lg`}>
+                <tr key={key} className={`text-lg even:bg-gray-100`}>
                   <td className="px-4 py-4 min-w-24 font-semibold tracking-tight">
                       {val.symbol}
                   </td>

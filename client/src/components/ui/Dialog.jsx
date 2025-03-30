@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 
-const Dialog = ({ open, onClose, children}) => {
+const Dialog = ({ open, onClose, title, children}) => {
   return (
     <>
       <div
@@ -22,7 +22,7 @@ const Dialog = ({ open, onClose, children}) => {
               {/*  Header */}
               <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200'>
                 <h3 className='text-xl font-semibold text-gray-900'>
-                  Add Your Bank Account
+                  {title}
                 </h3>
                 <button
                   onClick={onClose}

@@ -17,7 +17,7 @@
   .profile {
     @apply relative w-full mb-6 px-6 max-xl:justify-center;
   }
-  
+
   .profile-img {
     @apply absolute -top-8 size-20 flex justify-center items-center shadow-xl text-xl bg-green-200 rounded-full font-poppins font-bold text-green-700;
   }

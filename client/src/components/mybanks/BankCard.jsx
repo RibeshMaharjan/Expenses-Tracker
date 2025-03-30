@@ -1,6 +1,21 @@
 import Button from "../button.jsx";
+import {useEffect, useState} from "react";
+import Barchart from "@/components/ui/Barchart.jsx";
 
 const BankCard = ({ bank }) => {
+  const [expenseTransaction, setExpenseTransaction] = useState(0);
+  const [incomeTransaction, setIncomeTransaction] = useState(0);
+
+  useEffect(() => {
+      bank.transactions.map(transaction => {
+        if(transaction.transaction_type === 'income') {
+          setIncomeTransaction(prevState => prevState + parseFloat(transaction.transaction_amount));
+        } else {
+          setExpenseTransaction(prevState => prevState + parseFloat(transaction.transaction_amount));
+        }
+      });
+  }, [bank.transactions]);
+
   return (
     <>
       <div className={`w-full h-56 mb-4 rounded-xl flex`}>
@@ -35,16 +50,16 @@ const BankCard = ({ bank }) => {
           </div>
           <div className={`flex`}>
             <div className={`w-1/2`}>
-              Receive:
-              <p>Rs 7000</p>
+              <span className={`text-[#4CAF50] font-bold`}>Income</span>
+              <p>Rs {incomeTransaction}</p>
             </div>
             <div className={`w-1/2`}>
-              Spend:
-              <p>Rs 4000</p>
+              <span className={`text-[#757575] font-bold`}>Expense</span>
+              <p>Rs {expenseTransaction}</p>
             </div>
           </div>
-          <div className={``}>
-            Graphs
+          <div className={`mt-2 h-20`}>
+            <Barchart data={{incomeTransaction, expenseTransaction}} />
           </div>
         </div>
       </div>

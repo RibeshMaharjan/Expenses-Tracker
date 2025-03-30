@@ -5,7 +5,8 @@ const UserContext = createContext();
 export const useUserContext = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || []);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+  console.log(user)
 
   const addUser = (userInfo) => {
     const info = {
@@ -18,6 +19,15 @@ export const UserProvider = ({ children }) => {
 
   const removeUser = () => {
     setUser(null);
+    localStorage.removeItem('user');
+    try {
+      setUser(null);
+      localStorage.removeItem('user');
+      return true;
+    } catch (error) {
+      console.error("Error logging out user:", error);
+      return false;
+    }
   };
 
   const value = {

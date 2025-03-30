@@ -3,17 +3,37 @@ import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import Button from "./button";
 import {useUserContext} from "../context/UserContext.jsx";
+import { Progress } from "@/components/ui/progress"
+import { topCategoryStyles } from "@/constants";
 
-const RightSidebar = ({ banks, expenses }) => {
-  /*  const bankItems = React.Children.toArray(children).filter(
-    (child) => child.props.type === "home"
-  );
-  const expenseItems = React.Children.toArray(children).filter(
-    (child) => child.props.type === "expense"
-  ); */
+const RightSidebar = ({ banks, transactions }) => {
   const { user } = useUserContext();
+  let wholeSpending = 0;
 
+  const getExpenses = (transactions) => {
+    const categoryBalance = transactions.reduce((newArray, transaction) => {
+      if(transaction.transaction_type !== 'expense') {
+        return newArray;
+      }
+      wholeSpending += parseFloat(transaction.transaction_amount);
+      const categoryExist = newArray.find(item => item.name === transaction.category);
 
+      if(categoryExist) {
+        categoryExist.totalExpenses += parseFloat(transaction.transaction_amount);
+      } else {
+        newArray.push({
+          id: transaction.category_id,
+          name: transaction.category,
+          totalExpenses: parseFloat(transaction.transaction_amount),
+        })
+      }
+      return newArray;
+    }, [])
+
+    return categoryBalance;
+  }
+
+  const expenses = getExpenses(transactions);
   const handleClick = () => {
     console.log("clicked");
   };
@@ -51,7 +71,7 @@ const RightSidebar = ({ banks, expenses }) => {
           <div className="w-full">
             <ul className="">
               {banks.map((bank, index) => (
-                <BankItem key={index} name={bank.bank_name} balance={bank.balance} />
+                <BankItem key={index} bank={bank} />
               ))}
             </ul>
           </div>
@@ -70,8 +90,8 @@ const RightSidebar = ({ banks, expenses }) => {
               {expenses.map((expense, index) => (
                 <ExpenseItem
                   key={index}
-                  name={expense.name}
-                  balance={expense.amount}
+                  category={expense}
+                  allExpenses={wholeSpending}
                 />
               ))}
             </ul>
@@ -82,30 +102,53 @@ const RightSidebar = ({ banks, expenses }) => {
   );
 };
 
-export const BankItem = ({ name, balance }) => {
+export const BankItem = ({ bank }) => {
+  console.log(bank)
   return (
     <li className="flex px-4 py-3 bg-green-100 mb-3 text-base/8 rounded-md font-semibold text-green-800">
-      <span className="flex-grow">{name}</span>
-      <span>{balance}</span>
+      <div
+        className="bg-green-500 w-12 h-12 me-4 rounded-full flex justify-center items-center text-white text-base font-extrabold"
+        id="bank-account-profile"
+      >
+        {bank.initials}
+      </div>
+      <span className="flex-grow">{bank.bank_name}</span>
+      <span>{bank.balance}</span>
     </li>
   );
 };
 
-export const ExpenseItem = ({ name, expense }) => {
+export const ExpenseItem = ({ category, allExpenses }) => {
+  const spend = Math.round((category.totalExpenses/allExpenses) * 100);
+
+  const {
+    bg,
+    circleBg,
+    text: { main, count },
+    progress: { bg: progressBg, indicator },
+  } = topCategoryStyles[category.id] ||
+  topCategoryStyles.default;
+
   return (
-    <li className="flex px-4 py-3 items-center bg-green-100 mb-3 text-base/8 rounded-md font-semibold text-green-800">
+    <li className={`flex px-4 py-3 items-center ${bg} mb-3 text-base/8 rounded-md font-semibold text-green-800`}>
       <div
-        className="w-12 h-12 rounded-full bg-green-400 flex justify-center items-center"
+        className={`w-12 h-12 rounded-full ${circleBg} flex justify-center items-center ${count}`}
         id="expense-percent"
       >
-        40%
+        {spend}%
       </div>
       <div className="ml-3 flex-grow flex flex-col" id="expense-info">
         <div className="text-sm flex justify-between" id="expense-text">
-          <span className="">{name}</span>
-          <span>{expense} Spend</span>
+          <span className={`${main}`}>{category.name}</span>
+          <span className={`${count}`}>Rs. {category.totalExpenses} Spend</span>
         </div>
-        <div id="graph">line</div>
+        <div className={`mt-2`}>
+          <Progress
+            className={progressBg}
+            indicatorClassName={indicator}
+            value={spend}
+          />
+        </div>
       </div>
     </li>
   );

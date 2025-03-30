@@ -18,12 +18,12 @@ const Stock = () => {
         </PanelHeader>
         <section className="w-full" id="stock-section">
           <div
-            className="flex justify-between mb-2"
+            className="flex justify-between mb-4"
             id="transaction-section-header"
           >
             <h1 className="text-2xl font-bold">Stocks</h1>
           </div>
-            <StockTable/>
+            <StockTable />
         </section>
       </Panel>
     </>

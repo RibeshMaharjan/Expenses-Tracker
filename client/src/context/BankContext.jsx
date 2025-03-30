@@ -1,7 +1,13 @@
 import {createContext, useContext, useState} from "react";
 import axios from "axios";
 import {toast} from "sonner";
+import {Navigate} from "react-router-dom";
 
+/*
+* Context for Bank Accounts and Transactions
+* Has State for Banks(with their respective transactions) & Transactions(contains all the transaction)
+* has Function for retrieving banks and transactions
+*/
 const BankContext = createContext();
 
 export const useBankContent = () =>  useContext(BankContext);
@@ -9,20 +15,36 @@ export const useBankContent = () =>  useContext(BankContext);
 export const BankProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [banks, setBanks] = useState([]);
+  const [bankTransaction, setBankTransaction] = useState([]);
+  const [bankError, setBankError] = useState([]);
 
-  const getBankAccounts = async () => {
+  const delay = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    })
+  }
+
+  const getBankAccountsAndTransactions = async () => {
+    setLoading(true);
+    setBankError([]);
     try {
-      setLoading(true);
       const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/bankaccount`,
         {
           withCredentials: true,
         }
       );
 
+      await delay();
+
       const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transaction/`,
         {
           withCredentials: true,
-        });
+        }
+      );
+
+      setBankTransaction(transactionResponse.data.data);
 
       if(response.status !== 200) {
         toast.error(response.data.message);
@@ -31,6 +53,7 @@ export const BankProvider = ({ children }) => {
       const bankAndTransactions = response.data.data.map(bank => {
         return {
           ...bank,
+          initials: bank.bank_name.split(' ').map(init => init[0]).join(''),
           transactions: transactionResponse.data.data.filter(transaction => transaction.bank_account_id == bank.id),
         }
       })
@@ -39,20 +62,29 @@ export const BankProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+      setBankError([
+        {
+          status: error.status,
+          message: error.response.data.message,
+        }
+      ]);
     } finally {
       setLoading(false);
     }
   }
 
-  const setBankAccounts = ({ banks }) => {
+   const setBankAccounts = ({ banks }) => {
     setBanks(banks);
+    console.log(banks);
   }
 
   const value = {
     loading,
+    bankError,
     banks,
-    getBankAccounts,
+    bankTransaction,
     setBankAccounts,
+    getBankAccountsAndTransactions,
   }
 
   return <BankContext.Provider value={value}>{children}</BankContext.Provider>

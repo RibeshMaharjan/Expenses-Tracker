@@ -3,7 +3,6 @@ import { Toaster } from "sonner";
 import "./App.css";
 import Layout from "./components/Layout";
 import { UserProvider } from "./context/UserContext.jsx";
-import "./global.css";
 import SignUp from "./pages/auth/sigin-up";
 import SignIn from "./pages/auth/sign-in";
 import {StockProvider} from "./context/StockContext.jsx";

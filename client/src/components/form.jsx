@@ -1,4 +1,5 @@
 import Button from "./button";
+import {useState} from "react";
 
 export const MyForm = ({ children, className, onSubmit }) => {
   return (
@@ -27,7 +28,7 @@ export const InputField = ({
         disabled={loading}
         type={type}
         placeholder={placeholder}
-        className={`block w-full rounded-md bg-white px-3 py-1.5 text-sm/6 font-bold text-black outline outline-2 -outline-offset-1 outline-gray-300 placeholder:text-gray-500  focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 md:text-base/8 disabled:text-gray-400 ${className}`}
+        className={`block w-full rounded-md bg-white px-3 py-1.5 text-sm/6 font-bold text-black outline outline-2 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 md:text-base/8 disabled:text-gray-400 ${className}`}
         {...props}
       />
       {error && (
@@ -37,7 +38,38 @@ export const InputField = ({
   );
 };
 
-export const FormButton = ({ buttonName, loading }) => {
+export const SelectInput = ({ label, id, loading, error, options, className, ...props }) => {
+  return (
+  <div className="mb-1">
+    <label htmlFor={id} className={`block font-semibold mb-1`}>
+      {label}
+    </label>
+    <div className="mb-1 relative">
+    <select
+      disabled={loading}
+      className={`block w-full bg-white rounded-md px-3 py-1.5 appearance-none text-sm/6 font-bold text-gray-500 outline outline-2 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 md:text-base/8 disabled:text-gray-400 ${className}`}
+      {...props}
+    >
+        <option value="">Choose a bank</option>
+        {options.map((item, index) => <option key={index} className={`text-sm/6 md:text-base/8 bg-white`}
+                                              value={item.id}>{item.name}</option>)}
+      </select>
+      <svg
+        className="absolute top-1/2 -translate-y-1/2 right-2 pointer-events-none size-5 text-black sm:size-4"
+        viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+        <path fill-rule="evenodd"
+              d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"/>
+      </svg>
+    </div>
+    {error && (
+      <span className="text-red-800 italic font-semibold">{error}</span>
+    )}
+    </div>
+  );
+};
+
+export const FormButton = ({buttonName, loading}) => {
   return (
     <div>
       <Button

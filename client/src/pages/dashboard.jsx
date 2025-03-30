@@ -1,16 +1,13 @@
-import { useEffect, useState} from "react";
 import RightSidebar from "../components/RightSidebar";
 import {useUserContext} from "../context/UserContext.jsx";
-import { toast } from "sonner";
 import PageLoader from "../components/ui/PageLoader.jsx";
 import BankSection from "../components/home/Bank.jsx";
-import { useNavigate } from "react-router-dom";
 import {useBankContent} from "../context/BankContext.jsx";
 import PanelHeader, {MainHeaderContent, SubHeaderContent} from "../components/panel/PanelHeader.jsx";
 import Panel from "../components/panel/Panel.jsx";
 
 const Dashboard = () => {
-  const { banks, loading } = useBankContent();
+  const { banks, loading, bankTransaction } = useBankContent();
   const {user} = useUserContext();
 
   if (loading) {
@@ -34,16 +31,7 @@ const Dashboard = () => {
       </Panel>
       <RightSidebar
         banks={ banks.slice(0, 3) }
-        expenses={[
-          {
-            name: "Expense 1",
-            amount: 2000,
-          },
-          {
-            name: "Expense 1",
-            amount: 10000,
-          },
-        ]}
+        transactions={ bankTransaction }
       ></RightSidebar>
     </>
   );
