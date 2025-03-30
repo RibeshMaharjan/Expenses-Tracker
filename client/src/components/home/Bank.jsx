@@ -4,10 +4,11 @@ import {ActiveTabProvider} from "../../context/ActiveTabContext.jsx";
 import BankTabs from "./BankTabs.jsx";
 import BankContent from "./BankContent.jsx";
 import {useBankContent} from "../../context/BankContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 const BankSection = () => {
   const { banks } = useBankContent();
-
+  const navigate = useNavigate();
 
   return (
     <>
@@ -20,7 +21,7 @@ const BankSection = () => {
           <h1 className="text-2xl font-bold">Recent Transactions</h1>
           <Button
             className="border border-1 border-gray-300 rounded-md shadow-sm px-2 py-1 font-semibold tracking-tight hover:bg-green-500 hover:text-white lg:px-3"
-            onClick=""
+            onClick={() => navigate('/banktransaction')}
           >
             View All
           </Button>

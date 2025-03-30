@@ -38,10 +38,10 @@ const SignIn = () => {
     resolver: zodResolver(SigninSchema),
   });
 
-  const nagivate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    !user && nagivate("/sign-in");
+    user && navigate("/dashboard");
   }, [user]);
 
   const delay = (time) => {
@@ -73,7 +73,8 @@ const SignIn = () => {
 
       toast.success(message);
       addUser(user);
-      nagivate("/dashboard");
+      navigate("/dashboard");
+      console.log("success")
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);

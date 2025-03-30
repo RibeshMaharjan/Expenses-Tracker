@@ -1,4 +1,12 @@
-const BankTransactionTable = ({ transactions }) => {
+import {useBankContent} from "../../context/BankContext.jsx";
+import Loader from "../ui/loader.jsx";
+import {useActiveBankContext} from "../../context/ActiveBankTabContext.jsx";
+import { transactionCategoryStyles } from "@/constants";
+
+const BankTransactionsTable = ({ transactions }) => {
+  console.log(transactions)
+
+
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -12,19 +20,27 @@ const BankTransactionTable = ({ transactions }) => {
         </thead>
         <tbody className="">
         {
-          transactions.length <= 0 ? (
+          transactions?.length <= 0 ? (
             <tr className='text-lg bg-gray-300'>
-              <td colspan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
+              <td colSpan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
                 <span>No Transaction</span>
               </td>
             </tr>
           ) : (
-            transactions.map((val, key) => {
+            transactions?.map((val, key) => {
+              const {
+                borderColor,
+                backgroundColor,
+                textColor,
+                chipBackgroundColor,
+              } = transactionCategoryStyles[val.category_id] ||
+              transactionCategoryStyles.default;
+
               return (
                 <tr key={key} className={`text-lg ${
-                  val.transaction_type === "income" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  val.transaction_type === "income" ? "bg-green-50" : "bg-red-50"
                 }`}>
-                  <td className="px-4 py-4 min-w-24 font-semibold tracking-tight">
+                  <td className="px-4 py-4 min-w-24 font-bold tracking-tighter">
                     <span
                       className={
                         val.transaction_type === "income" ? "text-green-700" : "text-red-700"
@@ -36,10 +52,9 @@ const BankTransactionTable = ({ transactions }) => {
                       Rs. {val.transaction_amount}
                     </span>
                   </td>
-                  <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
+                  <td className="px-2 py-3 min-w-24 text-sm font-bold tracking-tight lg:text-base">
                     <span className=
-                            {`px-3 border-2 border-green-700 text-green-700 tracking-tight rounded-full before:content-['•'] before:mr-1.5 before:text-green-700 before:text-lg capitalize 
-                              ${val.transaction_type === "income" ? "border-green-700 text-green-700 before:text-green-700" : "border-red-700 text-red-700 before:text-red-700"}`}>
+                            {`px-2 border-2 ${borderColor} ${chipBackgroundColor} ${textColor} tracking-tight rounded-full before:content-['•'] before:mr-1 before:${textColor} before:text-xl capitalize`}>
                       {val.category}
                     </span>
                   </td>
@@ -60,4 +75,4 @@ const BankTransactionTable = ({ transactions }) => {
   );
 };
 
-export default BankTransactionTable;
+export default BankTransactionsTable;

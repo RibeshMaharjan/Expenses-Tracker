@@ -1,20 +1,20 @@
 import * as db from "../config/db.js";
 
-export const getAllTranscations = async (req, res) => {
+export const getTranscation = async (req, res) => {
   try {
     const { id } = req.user;
 
-    const getTranscationResult = await db.query(
-      `SELECT * FROM transactions WHERE user_id = $1 AND bank_account_id = $2`,
-      [id, bank_account_id]
+    const getTransactionResult = await db.query(
+      `SELECT * FROM transactions WHERE user_id = $1`,
+      [id]
     );
 
-    if(getTranscationResult.rowCount === 0) {
+    if(getTransactionResult.rowCount === 0) {
       return res.sendStatus(204);
     }
 
     return res.status(200).json({
-        data: getTranscationResult.rows,
+        data: getTransactionResult.rows,
     })
   } catch (error) {
     console.log(error);
@@ -24,7 +24,7 @@ export const getAllTranscations = async (req, res) => {
   }
 }
 
-export const getTranscation = async (req, res) => {
+export const getAllTransaction = async (req, res) => {
   try {
     const { id } = req.user;
 
@@ -35,6 +35,7 @@ export const getTranscation = async (req, res) => {
     const getTranscationResult = await db.query(
       `SELECT transactions.id as id, 
                    transactions.user_id as user_id, 
+                   transaction_categories.id as category_id,
                    bank_account_id, 
                    transaction_amount, 
                    transaction_type, 
@@ -141,15 +142,13 @@ export const createTranscation = async (req, res) => {
 
         await db.query(
           `UPDATE bank_accounts SET 
-                                balance = balance - $1,
-                                updated_at = CURRENT_TIMESTAMP 
+                                balance = balance - $1
                                 WHERE id = $2`,
           [transaction_amount, bank_account_id]);
       } else {
         await db.query(
           `UPDATE bank_accounts SET 
-                                balance = balance + $1,
-                                updated_at = CURRENT_TIMESTAMP 
+                                balance = balance + $1
                                 WHERE id = $2`,
           [transaction_amount, bank_account_id]
         );
@@ -197,6 +196,31 @@ export const createTranscation = async (req, res) => {
     return res.status(500).json({
       message: "There was a problem processing your transaction.",
     });    
+  }
+}
+
+export const getTransactionCategory = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const transactionCategoryResult = await db.query(
+      `SELECT * FROM transaction_categories WHERE user_id = $1`,
+      [id]
+    );
+
+    if(transactionCategoryResult.rowCount === 0) {
+      return res.sendStatus(204);
+    }
+
+    return res.status(200).json({
+      data: transactionCategoryResult.rows,
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "There was a problem processing your transaction.",
+    });
   }
 }
 
@@ -273,10 +297,12 @@ export const createTranscation = async (req, res) => {
                                 balance = balance + $1,
                                 updated_at = CURRENT_TIMESTAMP 
                                 WHERE id = $2`,
+                                updated_at = CURRENT_TIMESTAMP
           [transaction_amount, bank_account_id]
         );
       }
 
+                                updated_at = CURRENT_TIMESTAMP
       // Insert new transaction
       await db.query(
         `UPDATE transactions SET

@@ -9,6 +9,9 @@ import Dialog from "../ui/Dialog.jsx";
 import Loader from "../ui/loader.jsx";
 import axios from "axios";
 import {useBankContent} from "../../context/BankContext.jsx";
+import {Navigate} from "react-router-dom";
+import AnimatedCounter from "../ui/AnimatedCounter.jsx";
+import DoughnutChart from "../ui/DoughnutChart.jsx";
 
 const AddBankSchema = z.object({
   account_no: z
@@ -36,7 +39,7 @@ const AddBankSchema = z.object({
 })
 
 const BankAccountOverview = () => {
-  const { banks, getBankAccounts } = useBankContent();
+  const { banks } = useBankContent();
   const [totalbanks, setTotalbanks] = useState(banks.length);
   const [totalBalance, setTotalBalance] = useState(0);
   const [open, setOpen] = useState(false);
@@ -66,12 +69,16 @@ const BankAccountOverview = () => {
       }
 
       toast.success(response.data.message);
-      await getBankAccounts();
       setOpen(false);
       reset();
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+      if(error.status === 401) {
+        return (
+          <Navigate to="sign-in" />
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -93,20 +100,21 @@ const BankAccountOverview = () => {
         id="bank-account-overview-section"
       >
         <div className="w-full lg:w-32 mb-4 lg:mb-0" id="balance-graph">
-          <span className="text-center">Circle Graph</span>
+          {/*<span className="text-center">Circle Graph</span>*/}
+          <DoughnutChart banks={banks} />
         </div>
         <div className="flex ml-0 lg:ml-4 w-full" id="bank-account-overview">
           <div className="flex-grow text-lg font-bold" id="bank-account-counts">
-            <span>{totalbanks} Bank Accounts</span>
-            <div className="mt-auto" id="bank-account-total-amount">
+            <span className={``} >{totalbanks} Bank Accounts</span>
+            <div className="mt-4" id="bank-account-total-amount">
               <span className="text-base text-gray-600">Total Balance</span>
-              <div className="text-3xl font-extrabold" id="bank-account-balance">
-                Rs. {totalBalance}
+              <div className="text-2xl font-extrabold" id="bank-account-balance">
+                <AnimatedCounter amount={totalBalance} />
               </div>
             </div>
           </div>
 
-          <Dialog open={open} onClose={() => setOpen(false)}>
+          <Dialog open={open} onClose={() => setOpen(false)} title={`Add Your Bank Account`}>
             <MyForm onSubmit={handleSubmit(addBankHandler)}>
               <InputField
                 loading={loading}

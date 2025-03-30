@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import {Navigate, Outlet, Route, Routes, useNavigate} from "react-router-dom";
 import Sidebar, { SidebarItem } from "../components/sidebar/sidebar";
 import BankTransaction from "../pages/bankTransaction";
 import Bank from "../pages/banks";
@@ -7,22 +7,22 @@ import Setting from "../pages/setting";
 import Stock from "../pages/stock";
 import StockTransaction from "../pages/stockTransaction";
 import MobileNav from "./MobileNav";
+import {useUserContext} from "../context/UserContext.jsx";
+import {useBankContent} from "../context/BankContext.jsx";
+import {useEffect} from "react";
+import {useStockContent} from "../context/StockContext.jsx";
 
 /* icon imports */
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import ShowChartOutlinedIcon from "@mui/icons-material/ShowChartOutlined";
-import { useUserContext } from "../context/UserContext.jsx";
-import {ActiveTabProvider} from "../context/ActiveTabContext.jsx";
-import {BankProvider} from "../context/BankContext.jsx";
 
 const RootLayout = () => {
   const { user } = useUserContext();
-  // const [isLoggedIn, setIsLoggedIn] = useState(CookieExist("authToken"));
-
+  // user?.length > 0 && navigate("/dashboard");
+// }
   return !user ? (
     <Navigate to="sign-in" />
   ) : (
@@ -68,20 +68,44 @@ const RootLayout = () => {
 };
 
 const Layout = () => {
+  const { stockError, getStockAccountsAndTransactions } = useStockContent();
+  const { bankError, getBankAccountsAndTransactions } = useBankContent();
+
+  useEffect( () => {
+    // setLoading(true);
+      const getAll = async () => {
+        try {
+          await Promise.all([
+            getBankAccountsAndTransactions(),
+            getStockAccountsAndTransactions(),
+          ]);
+        } catch (error) {
+          console.log(error)
+        } finally {
+          // setLoading(false);
+        }
+      }
+      getAll();
+  }, []);
+
+  if(bankError[0]?.status === 401 || stockError[0]?.status === 401) {
+    return (
+      <Navigate to="sign-in" />
+    );
+  }
+
   return (
     <>
-      <BankProvider>
-        <Routes>
-          <Route element={<RootLayout />}>
-            <Route path="/account-page" element={<Setting />}></Route>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/banktransaction" element={<BankTransaction />} />
-            <Route path="/stocktransaction" element={<StockTransaction />} />
-            <Route path="/stock" element={<Stock />} />
-            <Route path="/bankaccount" element={<Bank />} />
-          </Route>
-        </Routes>
-      </BankProvider>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route path="/account-page" element={<Setting />}></Route>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/banktransaction" element={<BankTransaction />} />
+          <Route path="/stocktransaction" element={<StockTransaction />} />
+          <Route path="/stock" element={<Stock />} />
+          <Route path="/bankaccount" element={<Bank />} />
+        </Route>
+      </Routes>
     </>
   );
 };

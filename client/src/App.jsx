@@ -3,9 +3,10 @@ import { Toaster } from "sonner";
 import "./App.css";
 import Layout from "./components/Layout";
 import { UserProvider } from "./context/UserContext.jsx";
-import "./global.css";
 import SignUp from "./pages/auth/sigin-up";
 import SignIn from "./pages/auth/sign-in";
+import {StockProvider} from "./context/StockContext.jsx";
+import {BankProvider} from "./context/BankContext.jsx";
 
 function App() {
   return (
@@ -17,7 +18,11 @@ function App() {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
         </Routes>
-        <Layout />
+        <BankProvider>
+        <StockProvider>
+            <Layout />
+        </StockProvider>
+        </BankProvider>
       </UserProvider>
     </main>
   );
