@@ -3,10 +3,25 @@ import Loader from "../ui/loader.jsx";
 import {useActiveBankContext} from "../../context/ActiveBankTabContext.jsx";
 import { transactionCategoryStyles } from "@/constants";
 
+
+const CategoryBadge = ({ category }) => {
+  const {
+    borderColor,
+    backgroundColor,
+    textColor,
+    chipBackgroundColor,
+  } = transactionCategoryStyles[category.id] ||
+  transactionCategoryStyles.default;
+
+return (
+    <div className={`flex items-center truncate w-fit gap-1 rounded-full border-[2px] pl-1.5 pr-2 ${borderColor} ${chipBackgroundColor}`}>
+      <div className={`size-2 rounded-full ${backgroundColor}`} />
+      <p className={`text-[14px] font-bold ${textColor}`}>{category.category}</p>
+    </div>
+  )
+}
+
 const BankTransactionsTable = ({ transactions }) => {
-  console.log(transactions)
-
-
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -28,14 +43,6 @@ const BankTransactionsTable = ({ transactions }) => {
             </tr>
           ) : (
             transactions?.map((val, key) => {
-              const {
-                borderColor,
-                backgroundColor,
-                textColor,
-                chipBackgroundColor,
-              } = transactionCategoryStyles[val.category_id] ||
-              transactionCategoryStyles.default;
-
               return (
                 <tr key={key} className={`text-lg ${
                   val.transaction_type === "income" ? "bg-green-50" : "bg-red-50"
@@ -52,11 +59,8 @@ const BankTransactionsTable = ({ transactions }) => {
                       Rs. {val.transaction_amount}
                     </span>
                   </td>
-                  <td className="px-2 py-3 min-w-24 text-sm font-bold tracking-tight lg:text-base">
-                    <span className=
-                            {`px-2 border-2 ${borderColor} ${chipBackgroundColor} ${textColor} tracking-tight rounded-full before:content-['•'] before:mr-1 before:${textColor} before:text-xl capitalize`}>
-                      {val.category}
-                    </span>
+                  <td className="pl-2 pr-10">
+                    <CategoryBadge category={{id: val.category_id , category: val.category}} />
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
                     {val.transaction_date}

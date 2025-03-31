@@ -3,7 +3,7 @@ import Panel from "../components/panel/Panel.jsx";
 import StockTransactionTable from "../components/stockTransaction/StockTransactionTable.jsx";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {useEffect, useState} from "react";
-import {FormButton, InputField, MyForm, SelectInput} from "../components/form.jsx";
+import {FormButton, InputField, MyForm, SelectInput, TimeField} from "../components/form.jsx";
 import Loader from "../components/ui/loader.jsx";
 import Dialog from "../components/ui/Dialog.jsx";
 import {useForm} from "react-hook-form";
@@ -15,6 +15,7 @@ import {Navigate} from "react-router-dom";
 import PageLoader from "../components/ui/PageLoader.jsx";
 import {useBankContent} from "../context/BankContext.jsx";
 import {useStockContent} from "../context/StockContext.jsx";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 const transactionType =[
   {
@@ -66,11 +67,21 @@ const AddTransactionSchema = z
       .string()
       .transform(val => parseInt(val))
       .refine(val => !isNaN(val), { message: "Invalid bank_id type" }),
-
+    transaction_time: z
+      .string()
+      .refine((val) => {
+          const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // Regex for HH:MM
+          return timeRegex.test(val);
+        },
+        {
+          message: 'Invalid time format',
+        }
+      ),
   });
 
 
 const StockTransaction = () => {
+  const { user } = useUserContext();
   const [open, setOpen] = useState(false);
   const {
     register,
@@ -96,6 +107,19 @@ const StockTransaction = () => {
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message)
+        if(error.status === 401) {
+          const refrehToken = await axios.post(
+            `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+            {
+              "id": user.id
+            },
+            {
+              withCredentials: true,
+            });
+          if(refrehToken.status !== 200) return (
+            <Navigate to="sign-in" />
+          );
+        }
       }
     }
     getTransactionCategory();
@@ -123,7 +147,15 @@ const StockTransaction = () => {
       console.log(error);
       toast.error(error.response.data.message);
       if(error.status === 401) {
-        return (
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
           <Navigate to="sign-in" />
         );
       }
@@ -252,6 +284,16 @@ const StockTransaction = () => {
                 className=''
                 error={errors.transaction_date?.message}
                 {...register("transaction_date")}
+              />
+              <TimeField
+                loading={loading}
+                id='transactiontime'
+                label='Select Time:'
+                type='time'
+                className=''
+                placeholder='Enter time'
+                error={errors.transaction_time?.message}
+                {...register("transaction_time")}
               />
               <SelectInput
                 loading={isSubmitting}

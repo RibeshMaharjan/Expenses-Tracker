@@ -1,4 +1,4 @@
-import {FormButton, InputField, MyForm} from "../form.jsx";
+import {FormButton, InputField, MyForm, TimeField} from "../form.jsx";
 import Loader from "../ui/loader.jsx";
 import Dialog from "../ui/Dialog.jsx";
 import {useState} from "react";
@@ -7,10 +7,12 @@ import {useForm} from "react-hook-form";
 import axios from "axios";
 import {toast} from "sonner";
 import {Navigate} from "react-router-dom";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 const AddTransactionSchema = z.object();
 
 const AddTransactionForm = () => {
+  const { user } = useUserContext();
   const [loading, setLoading] = useState();
 
   const {
@@ -43,6 +45,19 @@ const AddTransactionForm = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+      if(error.status === 401) {
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
+          <Navigate to="sign-in" />
+        );
+      }
       if(error.status === 401) {
         return (
           <Navigate to="sign-in" />
@@ -106,6 +121,7 @@ const AddTransactionForm = () => {
             )
           }
         />
+
       </MyForm>
     </Dialog>
   )

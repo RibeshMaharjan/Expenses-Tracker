@@ -11,8 +11,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import {createContext, useContext, useEffect, useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
 import {useUserContext} from "../../context/UserContext.jsx";
-import {UseCookie} from "../../libs/auth.jsx";
-import {useStockContent} from "../../context/StockContext.jsx";
+import axios from "axios";
 
 const SidebarContext = createContext();
 
@@ -22,11 +21,21 @@ const Sidebar = ({ children }) => {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log("logout");
+    console.log(user)
+    const refreshToken = await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/auth/logout`,
+      {
+        "id": user.id
+      },
+      {
+        withCredentials: true,
+      });
     const removalSuccessful = removeUser();
 
-    if (removalSuccessful) {
+    console.log(refreshToken)
+    if (removalSuccessful && (refreshToken.status === 200)) {
       console.log("User removal successful.");
       navigate("/sign-in");
     } else {

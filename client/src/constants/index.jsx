@@ -95,38 +95,26 @@ export const topCategoryStyles = {
 export const transactionCategoryStyles = {
   1: {
     borderColor: "border-blue-600",
-    backgroundColor: "bg-blue-600",
+    backgroundColor: "bg-blue-500",
     textColor: "text-blue-700",
     chipBackgroundColor: "bg-inherit",
   },
   2: {
     borderColor: "border-green-700",
-    backgroundColor: "bg-green-700",
+    backgroundColor: "bg-green-500",
     textColor: "text-green-700",
     chipBackgroundColor: "bg-inherit",
   },
   3: {
     borderColor: "border-orange-600",
     backgroundColor: "bg-orange-500",
-    textColor: "text-orange",
-    chipBackgroundColor: "bg-orange",
+    textColor: "text-orange-700",
+    chipBackgroundColor: "bg-inherit",
   },
   4: {
-    borderColor: "border-lime-600",
-    backgroundColor: "bg-lime",
-    textColor: "text-lime",
-    chipBackgroundColor: "bg-lime",
-  },
-  5: {
     borderColor: "border-red-600",
     backgroundColor: "bg-red-500",
     textColor: "text-red-700",
-    chipBackgroundColor: "bg-red",
-  },
-  6: {
-    borderColor: "border-yellow-600",
-    backgroundColor: "bg-yellow-500",
-    textColor: "text-yellow-700",
     chipBackgroundColor: "bg-inherit",
   },
   default: {

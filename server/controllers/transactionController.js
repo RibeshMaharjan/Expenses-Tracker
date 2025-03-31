@@ -41,6 +41,7 @@ export const getAllTransaction = async (req, res) => {
                    transaction_type, 
                    transaction_date, 
                    description, 
+                   transaction_time,
                    name as category 
             FROM transactions JOIN transaction_categories ON transactions.category_id = transaction_categories.id 
             WHERE transactions.user_id = $1`,
@@ -73,15 +74,19 @@ export const createTranscation = async (req, res) => {
       transaction_type,
       category_id,
       transaction_date,
-      description
+      description,
+      transaction_time,
     } = req.body;
+
+    console.log(transaction_time);
 
     if(
         !bank_account_id || 
         !transaction_amount || 
         !category_id || 
         !transaction_date ||
-        !description
+        !description ||
+        !transaction_time
       ) {
       return res.status(422).json({
         message: "Missing required fields!"
@@ -162,8 +167,9 @@ export const createTranscation = async (req, res) => {
                                   transaction_type, 
                                   category_id, 
                                   transaction_date, 
-                                  description) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                                  description,
+                                  transaction_time) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           id,
           bank_account_id,
@@ -171,7 +177,8 @@ export const createTranscation = async (req, res) => {
           transaction_type,
           category_id,
           transaction_date,
-          description
+          description,
+          transaction_time
         ]
       )
 

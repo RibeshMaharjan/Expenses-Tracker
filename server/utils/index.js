@@ -39,7 +39,26 @@ export const createToken = ({ id, name, username, email, user_type }) => {
   return accessToken;
 };
 
+export const createRefreshToken = ({ id, name, username, email, user_type }) => {
+  const payload = {
+    id,
+    name,
+    username,
+    email,
+    user_type,
+  }
+
+  const refreshToken = JWT.sign(
+    payload,
+    process.env.REFRESH_TOKEN,
+  );
+  return refreshToken;
+};
 
 export const validateToken = (token) => {
   return JWT.verify(token, process.env.TOKEN);
+}
+
+export const validateRefreshToken = (token) => {
+  return JWT.verify(token, process.env.REFRESH_TOKEN);
 }

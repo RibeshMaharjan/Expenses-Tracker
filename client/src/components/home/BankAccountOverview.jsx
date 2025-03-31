@@ -12,6 +12,7 @@ import {useBankContent} from "../../context/BankContext.jsx";
 import {Navigate} from "react-router-dom";
 import AnimatedCounter from "../ui/AnimatedCounter.jsx";
 import DoughnutChart from "../ui/DoughnutChart.jsx";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 const AddBankSchema = z.object({
   account_no: z
@@ -39,6 +40,7 @@ const AddBankSchema = z.object({
 })
 
 const BankAccountOverview = () => {
+  const { user } = useUserContext();
   const { banks } = useBankContent();
   const [totalbanks, setTotalbanks] = useState(banks.length);
   const [totalBalance, setTotalBalance] = useState(0);
@@ -74,8 +76,17 @@ const BankAccountOverview = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+      setLoading(true);
       if(error.status === 401) {
-        return (
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
           <Navigate to="sign-in" />
         );
       }

@@ -2,12 +2,14 @@ import {createContext, useContext, useState} from "react";
 import axios from "axios";
 import {toast} from "sonner";
 import {Navigate, useNavigate} from "react-router-dom";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 const StockContext = createContext();
 
 export const useStockContent = () =>  useContext(StockContext);
 
 export const StockProvider = ({ children }) => {
+  const { user } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [stockTransactions, setStockTransactions] = useState([]);
@@ -39,13 +41,21 @@ export const StockProvider = ({ children }) => {
           return false;
         })
       });
-
       setStockTransactions(transactionResponse.data.data);
       setStocks(updatedStocks);
     } catch (error) {
       console.log(error);
       if(error.status === 401) {
-        return (
+        setLoading(true);
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
           <Navigate to="sign-in" />
         );
       }

@@ -2,7 +2,7 @@ import Panel from "../components/panel/Panel.jsx";
 import PanelHeader, {MainHeaderContent, SubHeaderContent} from "../components/panel/PanelHeader.jsx";
 import BankCard from "../components/mybanks/BankCard.jsx";
 import {useBankContent} from "../context/BankContext.jsx";
-import {FormButton, InputField, MyForm, SelectInput} from "../components/form.jsx";
+import {FormButton, InputField, MyForm, SelectInput, TimeField} from "../components/form.jsx";
 import Loader from "../components/ui/loader.jsx";
 import Dialog from "../components/ui/Dialog.jsx";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -15,6 +15,7 @@ import {Navigate} from "react-router-dom";
 import {zodResolver} from "@hookform/resolvers/zod";
 import PageLoader from "../components/ui/PageLoader.jsx";
 import bankTransaction from "./bankTransaction.jsx";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 const transactionType =[
   'income',
@@ -47,9 +48,20 @@ const AddTransactionSchema = z
       .string()
       .refine(date => new Date(date).toString() !== 'Invalid Date', { message: "A valid date is required" })
       .transform(date => new Date(date)),
+    transaction_time: z
+      .string()
+      .refine((val) => {
+          const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // Regex for HH:MM
+          return timeRegex.test(val);
+        },
+        {
+          message: 'Invalid time format',
+        }
+      )
   });
 
 const Bank = () => {
+  const { user } = useUserContext();
   const { loading, banks, getBankAccountsAndTransactions } = useBankContent();
   const [isSubmitting, setIsSubmitting] = useState();
   const [open, setOpen] = useState(false);
@@ -76,6 +88,19 @@ const Bank = () => {
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message)
+        if(error.status === 401) {
+          const refrehToken = await axios.post(
+            `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+            {
+              "id": user.id
+            },
+            {
+              withCredentials: true,
+            });
+          if(refrehToken.status !== 200) return (
+            <Navigate to="sign-in" />
+          );
+        }
       }
     }
     getTransactionCategory();
@@ -104,7 +129,15 @@ const Bank = () => {
       console.log(error);
       toast.error(error.response.data.message);
       if(error.status === 401) {
-        return (
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
           <Navigate to="sign-in" />
         );
       }
@@ -245,6 +278,16 @@ const Bank = () => {
                 className=''
                 error={errors.transaction_date?.message}
                 {...register("transaction_date")}
+              />
+              <TimeField
+                loading={loading}
+                id='transactiontime'
+                label='Select Time:'
+                type='time'
+                className=''
+                placeholder='Enter time'
+                error={errors.transaction_time?.message}
+                {...register("transaction_time")}
               />
               <FormButton
                 loading={isSubmitting}

@@ -1,12 +1,17 @@
 import * as db from "../config/db.js";
-import { comparePassword, createToken, hashPassword } from "../utils/index.js";
+import {
+  comparePassword,
+  createRefreshToken,
+  createToken,
+  hashPassword,
+  validateRefreshToken,
+  validateToken
+} from "../utils/index.js";
+import JWT from "jsonwebtoken";
 
 export const signupUser = async (req, res) => {
   try {
     const { fullname, username, password, confirmPassword, email } = req.body;
-
-    console.log(req.body);
-    
 
     if(!(fullname || username || password || !confirmPassword || email))  {
       return res.status(422).json({
@@ -86,11 +91,21 @@ export const signinUser = async(req, res) => {
     }
 
     user.password = undefined;
+    req.user = user;
 
     const token = createToken(user);
+    const refreshTokenResult = createRefreshToken(user);
+    const refreshToken = `{${refreshTokenResult}}`;
+    await db.query(
+      `UPDATE users
+      SET refresh_token=refresh_token || $1
+      WHERE email = $2`,
+      [refreshToken, email]
+    );
 
     return res.status(200)
               .cookie('authToken', `Bearer ${token}`)
+              .cookie('refreshToken', `${refreshTokenResult}`)
               .json({
                 message: "Login successfully",
                 user,
@@ -99,6 +114,82 @@ export const signinUser = async(req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
+
+export const refreshToken = async (req, res) => {
+  const { id } = req.body;
+  const refreshToken = req.cookies?.refreshToken || req.headers['authorization'];
+
+  if(refreshToken === null) res.status(401).json({
+    status: "Unauthorized",
+    message: "Access Denied",
+  })
+
+  const tokenresult = await db.query(
+    `SELECT refresh_token from users WHERE id = $1`,
+    [id]
+  );
+
+  const refreshTokens = tokenresult.rows[0].refresh_token;
+  if(!refreshTokens.includes(refreshToken)) res.status(403);
+
+  try {
+    const payload = validateRefreshToken(refreshToken);
+    if(!payload) {
+      res.status(401).json({
+        status: "Unauthorized",
+        message: "Access Denied",
+      })
+    }
+    const accessToken =  createToken(payload);
+    return res.status(200)
+      .cookie('authToken', `Bearer ${accessToken}`)
+      .json({
+        message: "success",
+        user: payload,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
+      message: error.message,
+    });
+  }
+}
+
+export const Logout = async (req, res) => {
+  const { id } = req.body;
+  const refreshToken = req.cookies?.refreshToken || req.headers['authorization'];
+
+  console.log(id);
+  const tokenresult = await db.query(
+    `SELECT refresh_token from users WHERE id = $1`,
+    [id]
+  );
+
+  console.log(tokenresult);
+  const refreshTokens = tokenresult.rows[0].refresh_token;
+  const updatedRefreshTokens = refreshTokens.filter(token => token !== refreshToken);
+
+  try {
+    const tokenresult = await db.query(
+      `UPDATE users
+      SET refresh_token=$1
+      WHERE id = $2`,
+      [updatedRefreshTokens, id]
+    );
+
+    return res.status(200)
+      .clearCookie("authToken")
+      .clearCookie("refreshToken")
+      .json({
+        message: "Logged out successfully",
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
       message: error.message,
     });
   }
