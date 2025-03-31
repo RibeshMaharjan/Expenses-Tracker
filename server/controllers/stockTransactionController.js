@@ -6,7 +6,7 @@ export const getStockTransaction = async (req, res) => {
 
     const getStockTransactionResult = await db.query(
       // `SELECT * FROM stock_transactions WHERE user_id =  $1`,
-      `SELECT st.id as id, symbol, st.quantity as quantity, st.price as stock_price, st.total_amount as transaction_amount, transaction_type, brokerage_account_no, bank_name, transaction_date FROM stock_transactions st JOIN brokerage_accounts ba on ba.id = st.brokerage_account_id join stocks s on s.id = st.stock_id JOIN bank_accounts b on b.id = st.bank_account_id WHERE st.user_id = $1;`,
+      `SELECT st.id as id, symbol, st.quantity as quantity, st.price as stock_price, st.total_amount as transaction_amount, transaction_type, brokerage_account_no, bank_name, transaction_date, transaction_time FROM stock_transactions st JOIN brokerage_accounts ba on ba.id = st.brokerage_account_id join stocks s on s.id = st.stock_id JOIN bank_accounts b on b.id = st.bank_account_id WHERE st.user_id = $1;`,
       [id]
     );
 
@@ -41,6 +41,7 @@ export const createStockTransaction = async (req, res) => {
       price,
       total_amount,
       transaction_date,
+      transaction_time,
     } = req.body;
 
     if(
@@ -51,7 +52,8 @@ export const createStockTransaction = async (req, res) => {
         !price ||
         !total_amount ||
         !transaction_date ||
-        !bank_account_id
+        !bank_account_id ||
+        !transaction_time
       ) {
       return res.status(422).json({
         message: "Missing required fields!"
@@ -191,8 +193,9 @@ export const createStockTransaction = async (req, res) => {
                                         total_amount, 
                                         transaction_type, 
                                         transaction_date,
-                                        bank_account_id) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                                        bank_account_id,
+                                        transaction_time) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [
           id, 
           brokerage_account_id, 
@@ -202,7 +205,8 @@ export const createStockTransaction = async (req, res) => {
           total_amount,
           transaction_type, 
           transaction_date,
-          bank_account_id
+          bank_account_id,
+          transaction_time
         ]);
 
       // COMMIT Transaction

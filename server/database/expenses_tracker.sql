@@ -1,78 +1,79 @@
 CREATE TYPE user_type as enum ('admin', 'user');
 
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(30) NOT NULL,
-  username VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  email VARCHAR(60) NOT NULL,
-  user_type user_type NOT NULL DEFAULT 'user',
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP
+id SERIAL PRIMARY KEY,
+name VARCHAR(30) NOT NULL,
+username VARCHAR(255) UNIQUE NOT NULL,
+password VARCHAR(255) NOT NULL,
+email VARCHAR(60) NOT NULL,
+user_type user_type NOT NULL DEFAULT 'user',
+created_at TIMESTAMP NOT NULL,
+updated_at TIMESTAMP,
+refresh_token text ARRAY
 );
 
 CREATE TABLE transaction_categories (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(30) NOT NULL,
-  user_id INTEGER REFERENCES users(id) NOT NULL
+id SERIAL PRIMARY KEY,
+name VARCHAR(30) NOT NULL,
+user_id INTEGER REFERENCES users(id) NOT NULL
 );
 
 CREATE TABLE bank_accounts (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id) NOT NULL,
-  account_no VARCHAR(30) NOT NULL,
-  account_holder_name VARCHAR(30) NOT NULL,
-  bank_name VARCHAR(50) NOT NULL,
-  balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) NOT NULL,
+account_no VARCHAR(30) NOT NULL,
+account_holder_name VARCHAR(30) NOT NULL,
+bank_name VARCHAR(50) NOT NULL,
+balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00
 );
 
 CREATE TABLE brokerage_accounts (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id) NOT NULL,
-  brokerage_no VARCHAR(5) NOT NULL,
-  brokerage_account_no VARCHAR(30) NOT NULL,
-  brokerage_account_holder_name VARCHAR(30) NOT NULL
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) NOT NULL,
+brokerage_no VARCHAR(5) NOT NULL,
+brokerage_account_no VARCHAR(30) NOT NULL,
+brokerage_account_holder_name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE transactions (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(id) NOT NULL,
-  bank_account_id INTEGER REFERENCES bank_accounts(id) NOT NULL,
-  transaction_amount DECIMAL(10, 2) NOT NULL,
-  transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('income', 'expense')),
-  category_id INTEGER REFERENCES transaction_categories(id),
-  transaction_date DATE NOT NULL,
-  description TEXT
+id SERIAL PRIMARY KEY,
+user_id INT REFERENCES users(id) NOT NULL,
+bank_account_id INTEGER REFERENCES bank_accounts(id) NOT NULL,
+transaction_amount DECIMAL(10, 2) NOT NULL,
+transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('income', 'expense')),
+category_id INTEGER REFERENCES transaction_categories(id),
+transaction_date DATE NOT NULL,
+description TEXT
 );
 
 CREATE TABLE stocks (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id) NOT NULL,
-  symbol VARCHAR(10) NOT NULL,
-  stock_name VARCHAR(50) NOT NULL,
-  quantity INT NOT NULL
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) NOT NULL,
+symbol VARCHAR(10) NOT NULL,
+stock_name VARCHAR(50) NOT NULL,
+quantity INT NOT NULL
 );
 
 CREATE TABLE stock_transactions (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id) NOT NULL,
-  bank_account_id INTEGER REFERENCES bank_accounts(id),
-  brokerage_account_id INTEGER REFERENCES brokerage_accounts(id) NOT NULL,
-  stock_id INTEGER REFERENCES stocks(id) NOT NULL,
-  transaction_type VARCHAR(10) NOT NULL CHECK (transaction_type IN ('buy', 'sell')),
-  quantity INTEGER NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
-  transaction_date DATE NOT NULL
+id SERIAL PRIMARY KEY,
+user_id INTEGER REFERENCES users(id) NOT NULL,
+bank_account_id INTEGER REFERENCES bank_accounts(id),
+brokerage_account_id INTEGER REFERENCES brokerage_accounts(id) NOT NULL,
+stock_id INTEGER REFERENCES stocks(id) NOT NULL,
+transaction_type VARCHAR(10) NOT NULL CHECK (transaction_type IN ('buy', 'sell')),
+quantity INTEGER NOT NULL,
+price DECIMAL(10, 2) NOT NULL,
+transaction_date DATE NOT NULL
 );
 
 -- Select Query
-
 SELECT * FROM users;
 SELECT * FROM transaction_categories;
 SELECT * FROM bank_accounts;
 SELECT * FROM brokerage_accounts;
 SELECT * FROM transactions;
 SELECT * FROM stocks;
+SELECT * FROM stock_transactions;
 
 -- Insert Query
 
@@ -83,12 +84,21 @@ INSERT INTO users(name, username, password, email, user_type, created_at) VALUES
 ('Andre White', 'andrewhite', 'andrewhite', 'andrewhite@gmail.com', 'user', CURRENT_TIMESTAMP);
 
 -- Sample Data for expenses_categories
-INSERT INTO transaction_categories (name, user_id) VALUES
-('Groceries', 4),
-('Utilities', 1),
-('Entertainment', 4),
-('Transportation', 4),
-('Salary', 4);
+INSERT INTO transaction_categories (name, user_id, color) VALUES
+('Initial Deposit', 0, 'orange'),
+('Groceries', 4, 'lime'),
+('Utilities', 1, 'blue'),
+('Entertainment', 4, 'red'),
+('Transportation', 4, 'yellow'),
+('Salary', 4, 'green');
+
+ALTER TABLE transaction_categories
+ADD CONSTRAINT transaction_categories_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+ALTER TABLE transactions
+ADD CONSTRAINT transactions_category_id_fkey
+FOREIGN KEY (category_id) REFERENCES transaction_categories(id);
 
 -- Sample Data for bank_accounts table
 INSERT INTO bank_accounts (user_id, account_no, account_holder_name, bank_name, balance) VALUES
@@ -112,11 +122,11 @@ INSERT INTO transactions (user_id, bank_account_id, transaction_amount, transact
 
 -- Sample Data for stocks table
 INSERT INTO stocks (user_id, symbol, stock_name, quantity) VALUES
-(4, 'AAPL', 'Apple Inc.', 15),
-(4, 'GOOG', 'Alphabet Inc.', 25),
-(4, 'TSLA', 'Tesla Inc.', 70),
-(2, 'MSFT', 'Microsoft Corporation', 30),
-(1, 'AAPL', 'Apple Inc.', 15);
+(4, 'NABIL', 'Nabil Bank Limited', 15),
+(4, 'NBL', 'NBL', 25),
+(4, 'ADBL', 'Agricultural Development Bank Limited', 70),
+(2, 'CGH', 'Chandragiri Hills Limited', 30),
+(1, 'GBBL', 'Garima Bikas Bank Limited', 15);
 
 -- Sample Data for stock_transactions table
 INSERT INTO stock_transactions (user_id, bank_account_id, brokerage_account_id, stock_id, transaction_type, quantity, price, transaction_date) VALUES

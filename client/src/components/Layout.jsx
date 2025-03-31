@@ -18,6 +18,7 @@ import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import ShowChartOutlinedIcon from "@mui/icons-material/ShowChartOutlined";
+import axios from "axios";
 
 const RootLayout = () => {
   const { user } = useUserContext();
@@ -68,6 +69,7 @@ const RootLayout = () => {
 };
 
 const Layout = () => {
+  const { user } = useUserContext();
   const { stockError, getStockAccountsAndTransactions } = useStockContent();
   const { bankError, getBankAccountsAndTransactions } = useBankContent();
 
@@ -81,6 +83,19 @@ const Layout = () => {
           ]);
         } catch (error) {
           console.log(error)
+          if(error.status === 401) {
+            const refrehToken = await axios.post(
+              `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+              {
+                "id": user.id
+              },
+              {
+                withCredentials: true,
+              });
+            if(refrehToken.status !== 200) return (
+              <Navigate to="sign-in" />
+            );
+          }
         } finally {
           // setLoading(false);
         }

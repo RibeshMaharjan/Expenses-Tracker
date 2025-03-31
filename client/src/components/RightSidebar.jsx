@@ -103,7 +103,6 @@ const RightSidebar = ({ banks, transactions }) => {
 };
 
 export const BankItem = ({ bank }) => {
-  console.log(bank)
   return (
     <li className="flex px-4 py-3 bg-green-100 mb-3 text-base/8 rounded-md font-semibold text-green-800">
       <div
@@ -112,7 +111,10 @@ export const BankItem = ({ bank }) => {
       >
         {bank.initials}
       </div>
-      <span className="flex-grow">{bank.bank_name}</span>
+      <div className="flex-grow">
+        {bank.bank_name}
+        <p className={`px-2 text-sm bg-green-300 w-fit rounded-full`}>{bank.bank_account_type}</p>
+      </div>
       <span>{bank.balance}</span>
     </li>
   );

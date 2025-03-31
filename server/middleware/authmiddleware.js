@@ -3,7 +3,7 @@ import { validateToken } from "../utils/index.js";
 export const authenticationToken = (req, res, next) => {
 
   const authHeader = req.cookies?.authToken || req.headers['authorization'];
-  
+
   if(authHeader === null) res.status(401).json({
     status: "Unauthorized",
     message: "Access Denied",

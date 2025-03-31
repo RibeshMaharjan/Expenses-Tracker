@@ -2,6 +2,7 @@ import {createContext, useContext, useState} from "react";
 import axios from "axios";
 import {toast} from "sonner";
 import {Navigate} from "react-router-dom";
+import {useUserContext} from "@/context/UserContext.jsx";
 
 /*
 * Context for Bank Accounts and Transactions
@@ -13,6 +14,7 @@ const BankContext = createContext();
 export const useBankContent = () =>  useContext(BankContext);
 
 export const BankProvider = ({ children }) => {
+  const { user } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [banks, setBanks] = useState([]);
   const [bankTransaction, setBankTransaction] = useState([]);
@@ -60,6 +62,19 @@ export const BankProvider = ({ children }) => {
 
       setBanks(bankAndTransactions);
     } catch (error) {
+      if(error.status === 401) {
+        const refreshToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refreshToken.status !== 200) return (
+          <Navigate to="sign-in" />
+        );
+      }
       console.log(error);
       toast.error(error.response.data.message);
       setBankError([

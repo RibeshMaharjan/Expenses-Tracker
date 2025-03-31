@@ -1,4 +1,23 @@
 import {useActiveBankContext} from "../../context/ActiveBankTabContext.jsx";
+import { transactionCategoryStyles } from "@/constants";
+import {formatDateTime} from "@/libs/utils.jsx";
+
+const CategoryBadge = ({ category }) => {
+  const {
+    borderColor,
+    backgroundColor,
+    textColor,
+    chipBackgroundColor,
+  } = transactionCategoryStyles[category.id] ||
+  transactionCategoryStyles.default;
+
+  return (
+    <div className={`flex items-center truncate w-fit gap-1 rounded-full border-[2px] pl-1.5 pr-2 ${borderColor} ${chipBackgroundColor}`}>
+      <div className={`size-2 rounded-full ${backgroundColor}`} />
+      <p className={`text-[14px] font-bold ${textColor}`}>{category.category}</p>
+    </div>
+  )
+}
 
 const BankTransactionTable = ({ banks }) => {
   const { activeBank } = useActiveBankContext();
@@ -40,15 +59,11 @@ const BankTransactionTable = ({ banks }) => {
                       Rs. {val.transaction_amount}
                     </span>
                   </td>
-                  <td className="px-2 py-3 min-w-24 text-base font-bold tracking-tight lg:text-lg">
-                    <span className=
-                            {`px-2 border-2 border-green-700 text-green-700 tracking-tight rounded-full before:content-['•'] before:mr-1.5 before:text-green-700 before:text-2xl capitalize 
-                              ${val.transaction_type === "income" ? "border-green-700 text-green-700 before:text-green-700" : "border-red-700 text-red-700 before:text-red-700"}`}>
-                      {val.category}
-                    </span>
+                  <td className="pl-2 pr-10">
+                    <CategoryBadge category={{id: val.category_id , category: val.category}} />
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                    {val.transaction_date}
+                    {formatDateTime(val.transaction_date, (val.transaction_time || ""))}
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
                     {val.description}

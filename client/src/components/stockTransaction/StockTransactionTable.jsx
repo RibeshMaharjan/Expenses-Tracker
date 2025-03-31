@@ -3,6 +3,7 @@ import axios from "axios";
 import Loader from "../ui/loader.jsx";
 import {toast} from "sonner";
 import {useStockContent} from "../../context/StockContext.jsx";
+import {formatDateTime} from "@/libs/utils.jsx";
 
 const StockTransactionTable = () => {
   const { loading, stockTransactions } = useStockContent();
@@ -12,7 +13,6 @@ const StockTransactionTable = () => {
       <Loader />
     </div>
   );
-  console.log(stockTransactions)
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -69,7 +69,7 @@ const StockTransactionTable = () => {
                     {val.bank_name}
                   </td>
                   <td className="px-4 py-4 min-w-24 font-semibold tracking-tight">
-                    {val.transaction_date}
+                    {formatDateTime(val.transaction_date, (val.transaction_time || ""))}
                   </td>
                 </tr>
               );
