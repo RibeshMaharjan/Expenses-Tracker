@@ -39,11 +39,8 @@ const BankTransaction = () => {
             <div className={`ms-auto`}>
               <Dropdown menuitems={bankName}  />
             </div>
-            {/*<Button className={`h-fit ms-auto px-3 py-2 border float-end border-1 border-gray-300 rounded-md shadow-sm text-lg font-semibold tracking-tight hover:bg-green-500 hover:text-white lg:px-3`}>
-              Select Account
-            </Button>*/}
           </div>
-            <section className="w-full" id="bank-cards-section">
+          <section className="w-full" id="bank-cards-section">
             <BankInfoCard banks={banks} />
             <div
               className="flex justify-between mb-4"

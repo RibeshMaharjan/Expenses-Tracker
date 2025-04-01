@@ -2,6 +2,7 @@ import {useBankContent} from "../../context/BankContext.jsx";
 import Loader from "../ui/loader.jsx";
 import {useActiveBankContext} from "../../context/ActiveBankTabContext.jsx";
 import { transactionCategoryStyles } from "@/constants";
+import {formatDateTime} from "@/libs/utils.jsx";
 
 
 const CategoryBadge = ({ category }) => {
@@ -63,7 +64,7 @@ const BankTransactionsTable = ({ transactions }) => {
                     <CategoryBadge category={{id: val.category_id , category: val.category}} />
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
-                    {val.transaction_date}
+                    {formatDateTime(val.transaction_date, (val.transaction_time || ""))}
                   </td>
                   <td className="px-2 py-3 min-w-24 font-semibold tracking-tight">
                     {val.description}

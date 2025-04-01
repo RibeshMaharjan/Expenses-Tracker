@@ -1,6 +1,8 @@
 import {useActiveBankContext} from "../../context/ActiveBankTabContext.jsx";
 import { transactionCategoryStyles } from "@/constants";
 import {formatDateTime} from "@/libs/utils.jsx";
+import {useEffect, useState} from "react";
+import {Pagination} from "@/components/ui/Pagination.jsx";
 
 const CategoryBadge = ({ category }) => {
   const {
@@ -21,6 +23,15 @@ const CategoryBadge = ({ category }) => {
 
 const BankTransactionTable = ({ banks }) => {
   const { activeBank } = useActiveBankContext();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [transactionsPerPage, setTransactionsPerPage] = useState(10);
+  const lastTransactionIndex = currentPage * transactionsPerPage;
+  const firstTransactionIndex = lastTransactionIndex - transactionsPerPage;
+  const currentTransaction = banks[activeBank]?.transactions.slice(firstTransactionIndex, lastTransactionIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeBank]);
 
   return (
     <div className="" id="table-container">
@@ -35,14 +46,14 @@ const BankTransactionTable = ({ banks }) => {
         </thead>
         <tbody className="">
         {
-          banks[activeBank]?.length <= 0 ? (
+          currentTransaction?.length <= 0 ? (
             <tr className='text-lg bg-gray-300'>
               <td colSpan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
                 <span>No Transaction</span>
               </td>
             </tr>
           ) : (
-            banks[activeBank]?.transactions?.map((val, key) => {
+            currentTransaction?.map((val, key) => {
               return (
                 <tr key={key} className={`text-lg ${
                   val.transaction_type === "income" ? "bg-green-50" : "bg-red-50"
@@ -75,6 +86,15 @@ const BankTransactionTable = ({ banks }) => {
         }
         </tbody>
       </table>
+      {
+        (banks[activeBank]?.transactions.length >= transactionsPerPage) &&
+          <Pagination
+            totalItems={banks[activeBank]?.transactions.length}
+            itemPerPage={transactionsPerPage}
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+          />
+      }
     </div>
   );
 };

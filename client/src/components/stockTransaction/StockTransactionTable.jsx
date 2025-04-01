@@ -4,15 +4,22 @@ import Loader from "../ui/loader.jsx";
 import {toast} from "sonner";
 import {useStockContent} from "../../context/StockContext.jsx";
 import {formatDateTime} from "@/libs/utils.jsx";
+import {Pagination} from "@/components/ui/Pagination.jsx";
 
 const StockTransactionTable = () => {
   const { loading, stockTransactions } = useStockContent();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [stockTransactionPerPage, setStockTransactionPerPage] = useState(10);
+  const lastStockIndex = currentPage * stockTransactionPerPage;
+  const firstStockIndex = lastStockIndex - stockTransactionPerPage;
+  const currentStockTransactions = stockTransactions.slice(firstStockIndex, lastStockIndex);
 
   if(loading) return (
     <div className={`mx-auto`}>
       <Loader />
     </div>
   );
+
   return (
     <div className="" id="table-container">
       <table className="w-full text-lg rounded-md">
@@ -37,7 +44,7 @@ const StockTransactionTable = () => {
               </td>
             </tr>
           ) : (
-            stockTransactions.map((val, key) => {
+            currentStockTransactions.map((val, key) => {
               return (
                 <tr key={key} className={`text-lg ${
                   val.transaction_type === "sell" ? "bg-green-50" : "bg-red-50"
@@ -78,6 +85,15 @@ const StockTransactionTable = () => {
         }
         </tbody>
       </table>
+      {
+        (stockTransactions.length >= stockTransactionPerPage) &&
+        <Pagination
+          totalItems={stockTransactions.length}
+          itemPerPage={stockTransactionPerPage}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
+      }
     </div>
   );
 };

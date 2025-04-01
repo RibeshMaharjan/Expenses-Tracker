@@ -1,8 +1,15 @@
 import {useStockContent} from "../../context/StockContext.jsx";
 import Loader from "../ui/loader.jsx";
+import {Pagination} from "@/components/ui/Pagination.jsx";
+import {useEffect, useState} from "react";
 
 const StockTable = () => {
   const { loading, stocks } = useStockContent();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [stockPerPage, setStockPerPage] = useState(10);
+  const lastStockIndex = currentPage * stockPerPage;
+  const firstStockIndex = lastStockIndex - stockPerPage;
+  const currentStocks = stocks.slice(firstStockIndex, lastStockIndex);
 
   if(loading) return (
     <div className={`mx-auto`}>
@@ -30,7 +37,7 @@ const StockTable = () => {
               </td>
             </tr>
           ) : (
-            stocks?.map((val, key) => {
+            currentStocks?.map((val, key) => {
               return (
                 <tr key={key} className={`text-lg even:bg-gray-100`}>
                   <td className="px-4 py-4 min-w-24 font-semibold tracking-tight">
@@ -52,6 +59,15 @@ const StockTable = () => {
         }
         </tbody>
       </table>
+      {
+        (stocks.length >= stockPerPage) &&
+        <Pagination
+          totalItems={stocks.length}
+          itemPerPage={stockPerPage}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
+      }
     </div>
   );
 };
