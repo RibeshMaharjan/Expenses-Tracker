@@ -36,6 +36,8 @@ export const StockProvider = ({ children }) => {
         return responseapi.data.data.content.find((stk) => {
           if(stk.symbol === stock.symbol) {
             stock.price = stk.lastUpdatedPrice;
+            stock.openPrice = stk.openPrice;
+            stock.closePrice = stk.previousDayClosePrice;
             return true;
           }
           return false;
