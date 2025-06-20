@@ -43,6 +43,12 @@ export const signupUser = async (req, res) => {
       "INSERT INTO users (name, username, password, email, created_at) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *",
       [fullname, username, hashPwd, email],
     );
+    
+    await db.query(
+      `INSERT INTO transaction_categories (name, user_id)
+            VALUES ('Initial Deposit', $1) RETURNING *;`,
+      [user.rows[0].id]
+    );
 
     user.rows[0].password = undefined;
 

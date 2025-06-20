@@ -67,16 +67,6 @@ const AddTransactionSchema = z
       .string()
       .transform(val => parseInt(val))
       .refine(val => !isNaN(val), { message: "Invalid bank_id type" }),
-    transaction_time: z
-      .string()
-      .refine((val) => {
-          const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // Regex for HH:MM
-          return timeRegex.test(val);
-        },
-        {
-          message: 'Invalid time format',
-        }
-      ),
   });
 
 
@@ -98,7 +88,7 @@ const StockTransaction = () => {
   useEffect( () => {
     const getTransactionCategory = async () => {
       try {
-        const brokerageResponse = await axios.get(`/api/brokerage`,
+        const brokerageResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/brokerage`,
           {
             withCredentials: true,
           },
@@ -109,7 +99,7 @@ const StockTransaction = () => {
         toast.error(error.response.data.message)
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `/api/auth/token`,
+            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
             {
               "id": user.id
             },
@@ -128,7 +118,7 @@ const StockTransaction = () => {
   const addTransactionHandler = async (formData) => {
     console.log(formData)
     try {
-      const response = await axios.post(`/api/stocktransaction/create`,
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/stocktransaction/create`,
         formData,
         {
           withCredentials: true,
@@ -148,7 +138,7 @@ const StockTransaction = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `/api/auth/token`,
+          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
           {
             "id": user.id
           },
@@ -284,16 +274,6 @@ const StockTransaction = () => {
                 className=''
                 error={errors.transaction_date?.message}
                 {...register("transaction_date")}
-              />
-              <TimeField
-                loading={loading}
-                id='transactiontime'
-                label='Select Time:'
-                type='time'
-                className=''
-                placeholder='Enter time'
-                error={errors.transaction_time?.message}
-                {...register("transaction_time")}
               />
               <SelectInput
                 loading={isSubmitting}

@@ -79,7 +79,7 @@ const Bank = () => {
   useEffect( () => {
     const getTransactionCategory = async () => {
       try {
-        const response = await axios.get(`/api/transaction/category`,
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/transaction/category`,
           {
             withCredentials: true,
           },
@@ -90,7 +90,7 @@ const Bank = () => {
         toast.error(error.response.data.message)
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `/api/auth/token`,
+            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
             {
               "id": user.id
             },
@@ -110,7 +110,7 @@ const Bank = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`/api/transaction`,
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/transaction`,
         formData,
         {
           withCredentials: true,

@@ -85,7 +85,7 @@ const Layout = () => {
           console.log(error)
           if(error.status === 401) {
             const refrehToken = await axios.post(
-              `/api/auth/token`,
+              `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
               {
                 "id": user.id
               },

@@ -33,17 +33,22 @@ export const addStock = async (req, res) => {
       stock_name,
       quantity,
       price,
+      total_amount,
       brokerage_account_id,
       transaction_date,
+      transaction_time,
       bank_account_id
     } = req.body;
 
     if(
       !symbol || 
       !stock_name || 
-      !quantity || 
+      !quantity ||
+      !price ||
+      !total_amount ||
       !brokerage_account_id || 
       !transaction_date ||
+      !transaction_time ||
       !bank_account_id
     ) {
       res.status(422).json({
@@ -54,6 +59,18 @@ export const addStock = async (req, res) => {
     if(isNaN(quantity)) {
       return res.status(422).json({
         message: "Invalid Quantity.",
+      });
+    }
+    
+    if(isNaN(price)) {
+      return res.status(422).json({
+        message: "Invalid Price.",
+      });
+    }
+    
+    if(isNaN(total_amount)) {
+      return res.status(422).json({
+        message: "Invalid Total Amount.",
       });
     }
 
@@ -106,9 +123,9 @@ export const addStock = async (req, res) => {
       console.log(stock_id);
 
       await db.query(
-        `INSERT INTO stock_transactions (user_id, brokerage_account_id, stock_id, transaction_type, price, quantity, transaction_date, bank_account_id) 
-        VALUES ($1, $2, $3, 'buy', $4, $5, $6);`,
-        [id, brokerage_account_id, stock_id, price, quantity, transaction_date, bank_account_id]
+        `INSERT INTO stock_transactions (user_id, brokerage_account_id, stock_id, transaction_type, price, quantity, total_amount, transaction_date, transaction_time, bank_account_id)
+        VALUES ($1, $2, $3, 'buy', $4, $5, $6, $7, $8, $9);`,
+        [id, brokerage_account_id, stock_id, price, quantity, total_amount, transaction_date, transaction_time, bank_account_id]
       );
 
       await db.query("COMMIT");

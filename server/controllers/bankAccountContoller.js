@@ -84,13 +84,26 @@ export const createBankAccount = async (req, res) => {
       [id, account_no, account_holder_name, bank_name, balance]
     );
     
+    
+    const initialDepositResult = await db.query(
+      `SELECT id FROM transaction_categories WHERE user_id = $1 AND name = 'Initial Deposit';`,
+      [id]
+    );
+    
+    if(initialDepositResult.rows.length === 0) {
+       return res.status(500).json({
+         message: "Failed to create initial deposit transaction",
+       })
+     }
+    
     const bank_account_id = result.rows[0].id;
     const description = `${account_holder_name} (Initial Deposit)`;
-
+    const initialDepositId = initialDepositResult.rows[0].id;
+    
     const transactionResult = await db.query(
       `INSERT INTO transactions (bank_account_id, transaction_amount, transaction_type, transaction_date, category_id, description, user_id) 
-      VALUES ($1, $2, $3, CURRENT_DATE, 1, $4, $5) RETURNING *;`,
-      [bank_account_id, balance, 'income', description, id]
+      VALUES ($1, $2, $3, CURRENT_DATE, $4, $5, $6) RETURNING *;`,
+      [bank_account_id, balance, 'income', initialDepositId, description, id]
     )
 
     if(transactionResult.rows.length === 0) {

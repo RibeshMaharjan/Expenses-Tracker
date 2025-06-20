@@ -19,7 +19,7 @@ export const StockProvider = ({ children }) => {
     setLoading(true);
     setStockError([]);
     try {
-      const response = await axios.get(`/api/stock`,
+      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/stock`,
         {
           withCredentials: true,
         }
@@ -31,7 +31,7 @@ export const StockProvider = ({ children }) => {
 
       const responseapi = await axios.get(`http://127.0.0.1:5000/today-price`);
 
-      const transactionResponse = await axios.get(`/api/stocktransaction`, {
+      const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/stocktransaction`, {
         withCredentials: true,
       });
 
@@ -54,7 +54,7 @@ export const StockProvider = ({ children }) => {
       if(error.status === 401) {
         setLoading(true);
         const refrehToken = await axios.post(
-          `/api/auth/token`,
+          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
           {
             "id": user.id
           },

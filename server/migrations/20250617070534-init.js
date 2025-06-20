@@ -89,7 +89,7 @@ export default {
       },
       transaction_date: { type: Sequelize.DATEONLY, allowNull: false },
       description: { type: Sequelize.TEXT },
-      transaction_time: { type: Sequelize.DATE }
+      transaction_time: { type: Sequelize.TIME }
     });
     
     await queryInterface.createTable('stocks', {
@@ -136,8 +136,8 @@ export default {
       },
       quantity: { type: Sequelize.INTEGER, allowNull: false },
       price: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
-      transaction_date: { type: Sequelize.DATE, allowNull: false },
-      transaction_time: { type: Sequelize.DATE }
+      transaction_date: { type: Sequelize.DATEONLY, allowNull: false },
+      transaction_time: { type: Sequelize.TIME }
     });
   },
   
