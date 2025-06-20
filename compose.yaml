@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - 5431:5432
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: expenses_tracker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    ports:
+      - 5000:5000
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    environment:
+      NODE_ENV: production
+    command: sh -c "sleep 5 && cd server && npm run migrate && node index.js"
+
+volumes:
+  postgres_data:

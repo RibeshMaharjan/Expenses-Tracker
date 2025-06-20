@@ -17,7 +17,7 @@ const BankTransaction = () => {
     </div>
   );
 
-  const bankName = banks.map(
+  const bankName = banks?.map(
     bank => bank?.bank_name
   )
 
@@ -37,7 +37,7 @@ const BankTransaction = () => {
               </SubHeaderContent>
             </PanelHeader>
             <div className={`ms-auto`}>
-              <Dropdown menuitems={bankName}  />
+              <Dropdown menuitems={bankName ?? ''}  />
             </div>
           </div>
           <section className="w-full" id="bank-cards-section">

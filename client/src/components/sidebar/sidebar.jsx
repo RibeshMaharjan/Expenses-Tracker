@@ -25,7 +25,7 @@ const Sidebar = ({ children }) => {
     console.log("logout");
     console.log(user)
     const refreshToken = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/auth/logout`,
+      `/api/auth/logout`,
       {
         "id": user.id
       },

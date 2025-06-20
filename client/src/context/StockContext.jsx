@@ -19,19 +19,23 @@ export const StockProvider = ({ children }) => {
     setLoading(true);
     setStockError([]);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/stock`,
+      const response = await axios.get(`/api/stock`,
         {
           withCredentials: true,
         }
       );
+      
+      // if(response.data.data.length == 0) {
+      //   return false;
+      // }
 
       const responseapi = await axios.get(`http://127.0.0.1:5000/today-price`);
 
-      const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/stocktransaction`, {
+      const transactionResponse = await axios.get(`/api/stocktransaction`, {
         withCredentials: true,
       });
 
-      const updatedStocks = response.data.data.filter((stock) =>
+      const updatedStocks = response?.data?.data?.filter((stock) =>
       {
         return responseapi.data.data.content.find((stk) => {
           if(stk.symbol === stock.symbol) {
@@ -50,7 +54,7 @@ export const StockProvider = ({ children }) => {
       if(error.status === 401) {
         setLoading(true);
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },
@@ -63,8 +67,8 @@ export const StockProvider = ({ children }) => {
       }
       setStockError([
         {
-          status: error.status,
-          message: error.response.data.message,
+          status: error?.status,
+          message: error?.response?.data?.message,
         }
       ]);
     } finally {

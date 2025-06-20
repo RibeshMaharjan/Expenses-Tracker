@@ -11,7 +11,7 @@ const StockTable = () => {
   const [stockPerPage, setStockPerPage] = useState(10);
   const lastStockIndex = currentPage * stockPerPage;
   const firstStockIndex = lastStockIndex - stockPerPage;
-  const currentStocks = stocks.slice(firstStockIndex, lastStockIndex);
+  const currentStocks = stocks?.slice(firstStockIndex, lastStockIndex);
 
   if(loading) return (
     <div className={`mx-auto`}>
@@ -86,7 +86,7 @@ const StockTable = () => {
         </tbody>
       </table>
       {
-        (stocks.length >= stockPerPage) &&
+        (stocks?.length >= stockPerPage) &&
         <Pagination
           totalItems={stocks.length}
           itemPerPage={stockPerPage}

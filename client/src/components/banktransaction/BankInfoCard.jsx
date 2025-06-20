@@ -4,7 +4,7 @@ import bankTransaction from "../../pages/bankTransaction.jsx";
 
 const BankInfoCard = ({ banks }) => {
   const { activeBank } = useActiveBankContext();
-  return (
+  return (banks) && (
     <>
       <div className={`py-2 px-4 lg:px-6 lg:py-5 mb-8 bg-green-600 rounded-xl flex justify-between text-white`}>
         <div>

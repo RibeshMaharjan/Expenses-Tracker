@@ -32,7 +32,7 @@ export const BankProvider = ({ children }) => {
     setLoading(true);
     setBankError([]);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/bankaccount`,
+      const response = await axios.get(`/api/bankaccount`,
         {
           withCredentials: true,
         }
@@ -40,22 +40,22 @@ export const BankProvider = ({ children }) => {
 
       await delay();
 
-      const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transaction/`,
+      const transactionResponse = await axios.get(`/api/transaction/`,
         {
           withCredentials: true,
         }
       );
 
-      setBankTransaction(transactionResponse.data.data);
+      setBankTransaction(transactionResponse?.data.data);
 
-      if(response.status !== 200) {
-        toast.error(response.data.message);
+      if(response?.status !== 200) {
+        toast.error(response?.data.message);
       }
 
-      const bankAndTransactions = response.data.data.map(bank => {
+      const bankAndTransactions = response?.data?.data?.map(bank => {
         return {
           ...bank,
-          initials: bank.bank_name.split(' ').map(init => init[0]).join(''),
+          initials: bank?.bank_name.split(' ').map(init => init[0]).join(''),
           transactions: transactionResponse.data.data.filter(transaction => transaction.bank_account_id == bank.id),
         }
       })
@@ -64,7 +64,7 @@ export const BankProvider = ({ children }) => {
     } catch (error) {
       if(error.status === 401) {
         const refreshToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },

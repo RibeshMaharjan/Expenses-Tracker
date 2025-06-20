@@ -58,7 +58,7 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/auth/signin`,
+        `/api/auth/signin`,
         formData,
         {
           withCredentials: true,

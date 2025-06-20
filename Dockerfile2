@@ -1,0 +1,13 @@
+FROM python
+LABEL authors="asura"
+
+RUN mkdir -p myapp
+
+WORKDIR /myapp
+
+COPY app.py .
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["python", "app.py"]

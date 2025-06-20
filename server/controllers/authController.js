@@ -78,7 +78,7 @@ export const signinUser = async(req, res) => {
 
     if(!user) {
       return res.status(401).json({
-        message: "Invalid email",
+        message: "User not found",
       });
     }
 
@@ -132,8 +132,8 @@ export const refreshToken = async (req, res) => {
     `SELECT refresh_token from users WHERE id = $1`,
     [id]
   );
-
-  const refreshTokens = tokenresult.rows[0].refresh_token;
+  
+  const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
   if(!refreshTokens.includes(refreshToken)) res.status(403);
 
   try {
@@ -169,8 +169,7 @@ export const Logout = async (req, res) => {
     [id]
   );
 
-  console.log(tokenresult);
-  const refreshTokens = tokenresult.rows[0].refresh_token;
+  const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
   const updatedRefreshTokens = refreshTokens.filter(token => token !== refreshToken);
 
   try {

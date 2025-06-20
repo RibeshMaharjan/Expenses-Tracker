@@ -27,7 +27,7 @@ const BankTransactionTable = ({ banks }) => {
   const [transactionsPerPage, setTransactionsPerPage] = useState(10);
   const lastTransactionIndex = currentPage * transactionsPerPage;
   const firstTransactionIndex = lastTransactionIndex - transactionsPerPage;
-  const currentTransaction = banks[activeBank]?.transactions.slice(firstTransactionIndex, lastTransactionIndex);
+  const currentTransaction = banks && banks[activeBank]?.transactions?.slice(firstTransactionIndex, lastTransactionIndex);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -87,7 +87,7 @@ const BankTransactionTable = ({ banks }) => {
         </tbody>
       </table>
       {
-        (banks[activeBank]?.transactions.length >= transactionsPerPage) &&
+        (banks && banks[activeBank]?.transactions?.length >= transactionsPerPage) &&
           <Pagination
             totalItems={banks[activeBank]?.transactions.length}
             itemPerPage={transactionsPerPage}

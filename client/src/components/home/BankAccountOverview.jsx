@@ -42,7 +42,7 @@ const AddBankSchema = z.object({
 const BankAccountOverview = () => {
   const { user } = useUserContext();
   const { banks } = useBankContent();
-  const [totalbanks, setTotalbanks] = useState(banks.length);
+  const [totalbanks, setTotalbanks] = useState(banks?.length);
   const [totalBalance, setTotalBalance] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState();
@@ -59,7 +59,7 @@ const BankAccountOverview = () => {
     setLoading(true);
     console.log(formData);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/bankaccount/createaccount`,
+      const response = await axios.post(`/api/bankaccount/createaccount`,
         formData,
         {
           withCredentials: true,
@@ -79,7 +79,7 @@ const BankAccountOverview = () => {
       setLoading(true);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },
@@ -96,9 +96,9 @@ const BankAccountOverview = () => {
   }
 
   useEffect(() => {
-    setTotalbanks(banks.length);
+    setTotalbanks(banks?.length);
     if(totalbanks > 0) {
-      setTotalBalance(banks.reduce((totalBankBalance, currBank) => {
+      setTotalBalance(banks?.reduce((totalBankBalance, currBank) => {
         return totalBankBalance + parseFloat(currBank.balance);
       }, 0));
     }

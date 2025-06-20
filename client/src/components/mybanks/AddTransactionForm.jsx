@@ -28,7 +28,7 @@ const AddTransactionForm = () => {
     setLoading(true);
     console.log(formData);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/bankaccount/createaccount`,
+      const response = await axios.post(`/api/bankaccount/createaccount`,
         formData,
         {
           withCredentials: true,
@@ -47,7 +47,7 @@ const AddTransactionForm = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },

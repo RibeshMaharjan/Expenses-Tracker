@@ -79,7 +79,7 @@ const Bank = () => {
   useEffect( () => {
     const getTransactionCategory = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transaction/category`,
+        const response = await axios.get(`/api/transaction/category`,
           {
             withCredentials: true,
           },
@@ -90,7 +90,7 @@ const Bank = () => {
         toast.error(error.response.data.message)
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+            `/api/auth/token`,
             {
               "id": user.id
             },
@@ -110,7 +110,7 @@ const Bank = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/transaction`,
+      const response = await axios.post(`/api/transaction`,
         formData,
         {
           withCredentials: true,
@@ -130,7 +130,7 @@ const Bank = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },
@@ -146,14 +146,14 @@ const Bank = () => {
     }
   }
 
-  const bankName = banks.map(bank => {
+  const bankName = banks?.map(bank => {
     return {
       id: bank.id,
       name: bank.bank_name,
     }
   });
 
-  const categoryName = category.map(category => {
+  const categoryName = category?.map(category => {
     return {
       id: category.id,
       name: category.name,
@@ -195,7 +195,7 @@ const Bank = () => {
             <h1 className="text-2xl font-bold">Banks</h1>
           </div>
           {
-            banks.length <= 0 ?
+            banks?.length <= 0 ?
               (
               <div>
             <h1>No Banks</h1>
@@ -204,7 +204,7 @@ const Bank = () => {
             : (
               <div className="py-2.5">
                 {
-                  banks.map((bank, index) => <BankCard key={index} bank={bank} />)
+                  banks?.map((bank, index) => <BankCard key={index} bank={bank} />)
                 }
               </div>
             )

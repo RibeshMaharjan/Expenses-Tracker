@@ -11,7 +11,7 @@ const RightSidebar = ({ banks, transactions }) => {
   let wholeSpending = 0;
 
   const getExpenses = (transactions) => {
-    const categoryBalance = transactions.reduce((newArray, transaction) => {
+    const categoryBalance = transactions?.reduce((newArray, transaction) => {
       if(transaction.transaction_type !== 'expense') {
         return newArray;
       }

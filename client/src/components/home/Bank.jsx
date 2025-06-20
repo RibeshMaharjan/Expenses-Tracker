@@ -29,7 +29,7 @@ const BankSection = () => {
         <div className="" id="transaction-table-section">
           <ActiveTabProvider>
             {
-              banks.length === 0 ?
+              banks?.length === 0 ?
               (<h1 className='text-2xl text-black'>No Banks Accounts</h1>) :
               ( <>
                   <ul
@@ -37,12 +37,12 @@ const BankSection = () => {
                     id="bank-dropdown"
                   >
                     {banks?.length > 0 &&
-                      banks.map((bank, index) => (
+                      banks?.map((bank, index) => (
                         <BankTabs key={index} bank={bank} index={index}></BankTabs>
                       ))}
                   </ul>
                   {banks?.length > 0 &&
-                    banks.map((bank, index) => (
+                    banks?.map((bank, index) => (
                       <BankContent key={index} bank={bank}></BankContent>
                     ))}
                 </>

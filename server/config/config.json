@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "mypassword",
+    "database": "expenses_tracker",
+    "host": "db",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "mypassword",
+    "database": "expenses_tracker",
+    "host": "db",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "mypassword",
+    "database": "expenses_tracker",
+    "host": "db",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

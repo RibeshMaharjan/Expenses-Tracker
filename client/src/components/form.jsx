@@ -89,7 +89,7 @@ export const SelectInput = ({label, id, loading, error, options, className, ...p
           {...props}
         >
           <option value="">Choose a bank</option>
-          {options.map((item, index) => <option key={index} className={`text-sm/6 md:text-base/8 bg-white`}
+          {options?.map((item, index) => <option key={index} className={`text-sm/6 md:text-base/8 bg-white`}
                                                 value={item.id}>{item.name}</option>)}
         </select>
         <svg

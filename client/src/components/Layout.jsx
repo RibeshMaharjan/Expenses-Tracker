@@ -85,7 +85,7 @@ const Layout = () => {
           console.log(error)
           if(error.status === 401) {
             const refrehToken = await axios.post(
-              `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+              `/api/auth/token`,
               {
                 "id": user.id
               },
@@ -114,6 +114,7 @@ const Layout = () => {
       <Routes>
         <Route element={<RootLayout />}>
           <Route path="/account-page" element={<Setting />}></Route>
+          <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/banktransaction" element={<BankTransaction />} />
           <Route path="/stocktransaction" element={<StockTransaction />} />

@@ -12,7 +12,7 @@ const StockTransactionTable = () => {
   const [stockTransactionPerPage, setStockTransactionPerPage] = useState(10);
   const lastStockIndex = currentPage * stockTransactionPerPage;
   const firstStockIndex = lastStockIndex - stockTransactionPerPage;
-  const currentStockTransactions = stockTransactions.slice(firstStockIndex, lastStockIndex);
+  const currentStockTransactions = stockTransactions?.slice(firstStockIndex, lastStockIndex);
 
   if(loading) return (
     <div className={`mx-auto`}>
@@ -37,14 +37,14 @@ const StockTransactionTable = () => {
         </thead>
         <tbody className="">
         {
-          stockTransactions.length <= 0 ? (
+          stockTransactions?.length <= 0 ? (
             <tr className='text-lg bg-gray-300'>
               <td colSpan={4} className={`text-center px-2 py-4 min-w-24 font-semibold tracking-tight`}>
                 <span>No Transaction</span>
               </td>
             </tr>
           ) : (
-            currentStockTransactions.map((val, key) => {
+            currentStockTransactions?.map((val, key) => {
               return (
                 <tr key={key} className={`text-lg ${
                   val.transaction_type === "sell" ? "bg-green-50" : "bg-red-50"
@@ -86,7 +86,7 @@ const StockTransactionTable = () => {
         </tbody>
       </table>
       {
-        (stockTransactions.length >= stockTransactionPerPage) &&
+        (stockTransactions?.length >= stockTransactionPerPage) &&
         <Pagination
           totalItems={stockTransactions.length}
           itemPerPage={stockTransactionPerPage}

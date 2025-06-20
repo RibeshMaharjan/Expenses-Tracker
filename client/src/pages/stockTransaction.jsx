@@ -98,7 +98,7 @@ const StockTransaction = () => {
   useEffect( () => {
     const getTransactionCategory = async () => {
       try {
-        const brokerageResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/brokerage`,
+        const brokerageResponse = await axios.get(`/api/brokerage`,
           {
             withCredentials: true,
           },
@@ -109,7 +109,7 @@ const StockTransaction = () => {
         toast.error(error.response.data.message)
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+            `/api/auth/token`,
             {
               "id": user.id
             },
@@ -128,7 +128,7 @@ const StockTransaction = () => {
   const addTransactionHandler = async (formData) => {
     console.log(formData)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/stocktransaction/create`,
+      const response = await axios.post(`/api/stocktransaction/create`,
         formData,
         {
           withCredentials: true,
@@ -148,7 +148,7 @@ const StockTransaction = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },
@@ -163,14 +163,14 @@ const StockTransaction = () => {
     }
   }
 
-  const bankName = banks.map(bank => {
+  const bankName = banks?.map(bank => {
     return {
       id: bank.id,
       name: bank.bank_name,
     }
   });
 
-  const stockName = stocks.map(stock => {
+  const stockName = stocks?.map(stock => {
     return {
       id: stock.id,
       name: stock.symbol,
@@ -178,7 +178,7 @@ const StockTransaction = () => {
   });
 
   // console.log(brokerage)
-  const brokerageName = brokerage.map(brokerage => {
+  const brokerageName = brokerage?.map(brokerage => {
     return {
       id: brokerage.id,
       name: brokerage.brokerage_account_no,

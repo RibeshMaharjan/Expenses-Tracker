@@ -5,8 +5,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 const DoughnutChart = ({ banks }) => {
-  const bankNames = banks.map(bank => bank.bank_name);
-  const bankBalance = banks.map(bank => bank.balance);
+  const bankNames = banks?.map(bank => bank.bank_name);
+  const bankBalance = banks?.map(bank => bank.balance);
 
 
   const data = {

@@ -30,7 +30,7 @@ const Dashboard = () => {
         <BankSection />
       </Panel>
       <RightSidebar
-        banks={ banks.slice(0, 3) }
+        banks={ banks?.slice(0, 3) }
         transactions={ bankTransaction }
       ></RightSidebar>
     </>
