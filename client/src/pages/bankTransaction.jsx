@@ -7,7 +7,6 @@ import Dropdown from "../components/ui/Dropdown.jsx";
 import {BankActiveTabProvider} from "../context/ActiveBankTabContext.jsx";
 import BankTransactionTable from "../components/banktransaction/BankTransactionTable.jsx";
 
-
 const BankTransaction = () => {
   const { loading, banks } = useBankContent();
 

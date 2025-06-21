@@ -5,10 +5,79 @@ import Button from "./button";
 import {useUserContext} from "../context/UserContext.jsx";
 import { Progress } from "@/components/ui/progress"
 import { topCategoryStyles } from "@/constants";
+import {FormButton, InputField, MyForm} from "@/components/form.jsx";
+import Loader from "@/components/ui/loader.jsx";
+import Dialog from "@/components/ui/Dialog.jsx";
+import * as z from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {useState} from "react";
+import axios from "axios";
+import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
+
+const AddCategorySchema = z
+  .object({
+    category: z
+      .string()
+      .trim()
+      .min(1, { message: "Category cannot be empty." })
+  });
 
 const RightSidebar = ({ banks, transactions }) => {
   const { user } = useUserContext();
+  const [openCategory, setOpenCategory] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   let wholeSpending = 0;
+  
+  const {
+     register,
+     handleSubmit,
+     formState: { errors },
+     reset,
+   } = useForm({
+     resolver: zodResolver(AddCategorySchema),
+   });
+  
+  const addCategoryHandler = async (formData) => {
+      setIsSubmitting(true);
+  
+      try {
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/transaction/category`,
+          formData,
+          {
+            withCredentials: true,
+          },
+        )
+  
+        if(response.status !== 200) {
+          toast.error(response.data.message);
+        }
+  
+        // await getBankAccountsAndTransactions();
+        toast.success(response.data.message);
+        setOpenCategory(false);
+        reset();
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+        if(error.status === 401) {
+          const refrehToken = await axios.post(
+            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+            {
+              "id": user.id
+            },
+            {
+              withCredentials: true,
+            });
+          if(refrehToken.status !== 200) return (
+            <Navigate to="sign-in" />
+          );
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
 
   const getExpenses = (transactions) => {
     const categoryBalance = transactions?.reduce((newArray, transaction) => {
@@ -28,15 +97,12 @@ const RightSidebar = ({ banks, transactions }) => {
         })
       }
       return newArray;
-    }, [])
+    }, []);
 
     return categoryBalance;
   }
 
   const expenses = getExpenses(transactions);
-  const handleClick = () => {
-    console.log("clicked");
-  };
 
   return (
     <aside className="right-sidebar no-scrollbar">
@@ -59,18 +125,11 @@ const RightSidebar = ({ banks, transactions }) => {
             <PaidOutlinedIcon className="mr-2" />
             My Banks
           </h2>
-          <Button
-            className="px-1 float-end text-green-600 text-sm/6 font-bold rounded-md hover:bg-green-200"
-            onClick={handleClick}
-          >
-            <AddOutlinedIcon sx={{ fontSize: 18 }} />
-            <span className="ms-1">Add Bank</span>
-          </Button>
         </div>
         {banks?.length > 0 && (
           <div className="w-full">
             <ul className="">
-              {banks.map((bank, index) => (
+              {banks?.map((bank, index) => (
                 <BankItem key={index} bank={bank} />
               ))}
             </ul>
@@ -83,11 +142,18 @@ const RightSidebar = ({ banks, transactions }) => {
             <MoneyOffIcon className="mr-2" />
             My Expenses
           </h2>
+          <Button
+            className="px-1 float-end text-green-600 text-sm/6 font-bold rounded-md hover:bg-green-200"
+            onClick={() => setOpenCategory(true)}
+          >
+            <AddOutlinedIcon sx={{ fontSize: 18 }} />
+            <span className="ms-1">Add Categories</span>
+          </Button>
         </div>
         {expenses?.length > 0 && (
           <div className="w-full">
             <ul className="">
-              {expenses.map((expense, index) => (
+              {expenses?.map((expense, index) => (
                 <ExpenseItem
                   key={index}
                   category={expense}
@@ -97,6 +163,33 @@ const RightSidebar = ({ banks, transactions }) => {
             </ul>
           </div>
         )}
+        <Dialog
+          open={openCategory}
+          onClose={() => setOpenCategory(false)}
+          title={`Add your Transaction`}>
+          <MyForm onSubmit={handleSubmit(addCategoryHandler)}>
+            <InputField
+              loading={isSubmitting}
+              id='category'
+              label='Category'
+              type='text'
+              className=''
+              placeholder='Category'
+              error={errors.category?.message}
+              {...register("category")}
+            />
+            <FormButton
+              loading={isSubmitting}
+              buttonName={
+                isSubmitting ? (
+                  <Loader label="Adding" color="white" />
+                ) : (
+                  "Add"
+                )
+              }
+            />
+          </MyForm>
+        </Dialog>
       </section>
     </aside>
   );

@@ -46,17 +46,25 @@ export const BankProvider = ({ children }) => {
         }
       );
 
-      setBankTransaction(transactionResponse?.data.data);
+      if(transactionResponse?.status !== 200) {
+        toast.error(response?.data.message);
+      }
+      
+      if(transactionResponse?.status === 204) {
+        setBankTransaction([]);
+      } else {
+        setBankTransaction(transactionResponse?.data?.data);
+      }
 
       if(response?.status !== 200) {
         toast.error(response?.data.message);
       }
-
+      
       const bankAndTransactions = response?.data?.data?.map(bank => {
         return {
           ...bank,
           initials: bank?.bank_name.split(' ').map(init => init[0]).join(''),
-          transactions: transactionResponse.data.data.filter(transaction => transaction.bank_account_id == bank.id),
+          transactions: transactionResponse?.data?.data?.filter(transaction => transaction.bank_account_id == bank.id),
         }
       })
 

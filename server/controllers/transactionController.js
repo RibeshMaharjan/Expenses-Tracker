@@ -59,7 +59,7 @@ export const getAllTransaction = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "There was a problem retrieving your home accounts",
+      message: "There was a problem retrieving your transactions",
     });
   }
 }
@@ -168,7 +168,7 @@ export const createTranscation = async (req, res) => {
                                   category_id, 
                                   transaction_date, 
                                   description,
-                                  transaction_time) 
+                                  transaction_time)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           id,
@@ -221,6 +221,46 @@ export const getTransactionCategory = async (req, res) => {
 
     return res.status(200).json({
       data: transactionCategoryResult.rows,
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "There was a problem processing your transaction.",
+    });
+  }
+}
+
+export const setTransactionCategory = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { category } = req.body;
+
+    if(!category)  {
+      return res.status(422).json({
+        message: "Missing required fields!"
+      });
+    }
+    
+    const transactionCategoryExistResult = await db.query(
+      `SELECT * FROM transaction_categories WHERE user_id = $1 AND name = $2`,
+      [id, category]
+    );
+
+    if(transactionCategoryExistResult.rowCount > 0) {
+      return res.status(404).json({
+        message: "Category already exist"
+      })
+    }
+
+    const addtransactionCategoryResult = await db.query(
+      `INSERT INTO transaction_categories (name, user_id)
+            VALUES ($1, $2);`,
+      [category, id]
+    );
+    
+    return res.status(200).json({
+      message: "Category created successfully"
     })
 
   } catch (error) {

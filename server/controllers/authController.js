@@ -134,15 +134,16 @@ export const refreshToken = async (req, res) => {
     message: "Access Denied",
   })
 
-  const tokenresult = await db.query(
-    `SELECT refresh_token from users WHERE id = $1`,
-    [id]
-  );
-  
-  const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
-  if(!refreshTokens.includes(refreshToken)) res.status(403);
-
   try {
+    
+    const tokenresult = await db.query(
+      `SELECT refresh_token from users WHERE id = $1`,
+      [id]
+    );
+    
+    const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
+    if(!refreshTokens.includes(refreshToken)) res.status(403);
+
     const payload = validateRefreshToken(refreshToken);
     if(!payload) {
       res.status(401).json({

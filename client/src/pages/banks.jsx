@@ -130,7 +130,7 @@ const Bank = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `/api/auth/token`,
+          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
           {
             "id": user.id
           },
@@ -204,7 +204,7 @@ const Bank = () => {
             : (
               <div className="py-2.5">
                 {
-                  banks?.map((bank, index) => <BankCard key={index} bank={bank} />)
+                  banks?.map((bank, index) => <BankCard key={index} bank={bank} index={index+1} />)
                 }
               </div>
             )

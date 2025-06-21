@@ -118,7 +118,7 @@ const StockTransaction = () => {
   const addTransactionHandler = async (formData) => {
     console.log(formData)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/stocktransaction/create`,
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/transactions/create`,
         formData,
         {
           withCredentials: true,

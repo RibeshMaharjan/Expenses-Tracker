@@ -12,6 +12,7 @@ export const StockProvider = ({ children }) => {
   const { user } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [stocks, setStocks] = useState([]);
+  const [brokerage, setBrokerage] = useState([]);
   const [stockTransactions, setStockTransactions] = useState([]);
   const [stockError, setStockError] = useState([]);
 
@@ -37,7 +38,7 @@ export const StockProvider = ({ children }) => {
 
       const updatedStocks = response?.data?.data?.filter((stock) =>
       {
-        return responseapi.data.data.content.find((stk) => {
+        return responseapi?.data.data.content.find((stk) => {
           if(stk.symbol === stock.symbol) {
             stock.price = stk.lastUpdatedPrice;
             stock.openPrice = stk.openPrice;
@@ -47,7 +48,7 @@ export const StockProvider = ({ children }) => {
           return false;
         })
       });
-      setStockTransactions(transactionResponse.data.data);
+      setStockTransactions(transactionResponse?.data.data);
       setStocks(updatedStocks);
     } catch (error) {
       console.log(error);
@@ -75,16 +76,35 @@ export const StockProvider = ({ children }) => {
       setLoading(false);
     }
   }
+  
+  const getBrokerage = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/brokerage`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      setBrokerage(response.data.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const updateStocks = ({ stocks }) => {
     setStocks(stocks);
   }
-
+  
   const value = {
     loading,
     stockError,
     stocks,
     stockTransactions,
+    brokerage,
+    getBrokerage,
     updateStocks,
     getStockAccountsAndTransactions,
   }

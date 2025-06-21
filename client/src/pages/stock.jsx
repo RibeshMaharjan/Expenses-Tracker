@@ -5,7 +5,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {FormButton, InputField, MyForm, SelectInput, TimeField} from "@/components/form.jsx";
 import Loader from "@/components/ui/loader.jsx";
 import Dialog from "@/components/ui/Dialog.jsx";
-import {useState} from "react";
+import {use, useEffect, useState} from "react";
 import {set, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -72,20 +72,51 @@ const AddStockSchema = z
       .refine(val => !isNaN(val), { message: "Invalid bank_id type" }),
   });
 
+const AddBrokerageSchema = z
+  .object({
+    brokerage_no: z
+      .string()
+      .transform(val => parseFloat(val))
+      .refine(val => !isNaN(val), { message: "Brokerage no must be a number" })
+      .refine(val => val >= 0, { message: "Brokerage no must be positive" })
+      .refine(val => val !== 0, { message: "Brokerage no must be positive" }),
+    brokerage_account_holder_name: z
+      .string()
+      .trim()
+      .min(0, { message: "Account holder name cannot be empty" }),
+    brokerage_account_no: z
+      .string()
+      .transform(val => parseFloat(val))
+      .refine(val => !isNaN(val), { message: "Brokerage account no must be a number" })
+      .refine(val => val >= 0, { message: "Brokerage account no must be positive" })
+      .refine(val => val !== 0, { message: "Brokerage account no must be positive" }),
+  });
+
 const Stock = () => {
   const { user } = useUserContext();
   const [openStockModel, setOpenStockModel] = useState(false);
+  const [openBrokerageModel, setOpenBrokerageModel] = useState(false);
   const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
+    register: stockRegister,
+    handleSubmit: handleStockSubmit,
+    formState: { errors: stockErrors, isSubmitting: isStockSubmitting },
+    reset: stockReset,
   } = useForm({
     resolver: zodResolver(AddStockSchema),
   });
-  const { stocks, getStockAccountsAndTransactions } = useStockContent();
+  
+  const {
+    register: brokerageRegister,
+    handleSubmit: handleBrokerageSubmit,
+    formState: { errors: brokerageErrors, isSubmitting: isBrokerageSubmitting },
+    reset: brokerageReset,
+  } = useForm({
+    resolver: zodResolver(AddBrokerageSchema),
+  });
+  
+  const { stocks, getStockAccountsAndTransactions, brokerage, getBrokerage } = useStockContent();
   const { loading, banks, getBankAccountsAndTransactions } = useBankContent();
-  const [brokerage, setBrokerage] = useState([]);
+  // const [brokerage, setBrokerage] = useState([]);
   
   const addStockHandler = async (formData) => {
       console.log(formData)
@@ -94,7 +125,7 @@ const Stock = () => {
           formData,
           {
             withCredentials: true,
-          },x
+          },
         )
   
         if(response.status !== 201) {
@@ -103,7 +134,7 @@ const Stock = () => {
   
         toast.success(response.data.message);
         setOpenStockModel(false);
-        reset();
+        stockReset();
         await getStockAccountsAndTransactions();
       } catch (error) {
         console.log(error);
@@ -124,6 +155,47 @@ const Stock = () => {
       }
     }
     
+  const addBrokerageHandler = async (formData) => {
+    console.log(formData)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/brokerage/createaccount`,
+        formData,
+        {
+          withCredentials: true,
+        },
+      )
+
+      if(response.status !== 201) {
+        toast.error(response.data.message);
+      }
+
+      toast.success(response.data.message);
+      setOpenBrokerageModel(false);
+      brokerageReset();
+      await getBrokerage();
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+      if(error.status === 401) {
+        const refrehToken = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+          {
+            "id": user.id
+          },
+          {
+            withCredentials: true,
+          });
+        if(refrehToken.status !== 200) return (
+          <Navigate to="sign-in" />
+        );
+      }
+    }
+  }
+
+  useEffect(() => {
+    getBrokerage();
+  }, []);
+  
   const bankName = banks?.map(bank => {
     return {
       id: bank.id,
@@ -158,6 +230,10 @@ const Stock = () => {
             </SubHeaderContent>
           </PanelHeader>
           <div className={`ms-auto`}>
+            <button onClick={() => setOpenBrokerageModel(true)} type='button' className="h-fit px-1 py-1.5 text-green-600 text-base/6 font-bold rounded-md hover:bg-green-200">
+              <AddOutlinedIcon sx={{ fontSize: 20 }} />
+              <span  className="ms-1">Add Brokerage Account</span>
+            </button>
             <button onClick={() => setOpenStockModel(true)} type='button' className="h-fit px-1 py-1.5 text-green-600 text-base/6 font-bold rounded-md hover:bg-green-200">
               <AddOutlinedIcon sx={{ fontSize: 20 }} />
               <span  className="ms-1">Add Stocks</span>
@@ -176,100 +252,148 @@ const Stock = () => {
             open={openStockModel}
             onClose={() => setOpenStockModel(false)}
             title={`Add your Stock`}>
-            <MyForm onSubmit={handleSubmit(addStockHandler)}>
+            <MyForm onSubmit={handleStockSubmit(addStockHandler)}>
               <SelectInput
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='brokerage_account_id'
                 label='Brokerage'
                 className=''
                 options={brokerageName}
-                error={errors.brokerage_account_id?.message}
-                {...register("brokerage_account_id")}
+                error={stockErrors.brokerage_account_id?.message}
+                {...stockRegister("brokerage_account_id")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='symbol'
                 label='Symbol'
                 type='text'
                 className='appearance-none'
                 placeholder='Enter Stock Symbol'
-                error={errors.symbol?.message}
-                {...register("symbol")}
+                error={stockErrors.symbol?.message}
+                {...stockRegister("symbol")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='stock_name'
                 label='Stock Name'
                 type='text'
                 className='appearance-none'
                 placeholder='Enter Stock Name'
-                error={errors.stock_name?.message}
-                {...register("stock_name")}
+                error={stockErrors.stock_name?.message}
+                {...stockRegister("stock_name")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='quantity'
                 label='Quantity'
                 type='number'
                 className='appearance-none'
                 placeholder='Enter your quantity'
-                error={errors.quantity?.message}
-                {...register("quantity")}
+                error={stockErrors.quantity?.message}
+                {...stockRegister("quantity")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='price'
                 label='Price'
                 type='number'
                 className='appearance-none'
                 placeholder='Enter your price'
-                error={errors.price?.message}
+                error={stockErrors.price?.message}
                 diabled='true'
-                {...register("price")}
+                {...stockRegister("price")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='total_amount'
                 label='Total'
                 type='number'
                 className='appearance-none'
                 placeholder='Enter your total'
-                error={errors.total_amount?.message}
+                error={stockErrors.total_amount?.message}
                 diabled='true'
-                {...register("total_amount")}
+                {...stockRegister("total_amount")}
               />
               <InputField
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='transaction_date'
                 label='Transaction Date '
                 type='date'
                 placeholder='Enter the date'
                 className=''
-                error={errors.transaction_date?.message}
-                {...register("transaction_date")}
+                error={stockErrors.transaction_date?.message}
+                {...stockRegister("transaction_date")}
               />
-              <SelectInput
-                loading={isSubmitting}
-                id='transaction_type'
-                label='Transaction Type'
+              <TimeField
+                loading={isStockSubmitting}
+                id='transaction_time'
+                label='Select Time:'
+                type='time'
                 className=''
-                options={transactionType}
-                error={errors.transaction_type?.message}
-                {...register("transaction_type")}
+                placeholder='Enter time'
+                error={stockErrors.transaction_time?.message}
+                {...stockRegister("transaction_time")}
               />
               <SelectInput
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 id='bank_account_id'
                 label='Bank'
                 className=''
                 options={bankName}
-                error={errors.bank_account_id?.message}
-                {...register("bank_account_id")}
+                error={stockErrors.bank_account_id?.message}
+                {...stockRegister("bank_account_id")}
               />
               <FormButton
-                loading={isSubmitting}
+                loading={isStockSubmitting}
                 buttonName={
-                  isSubmitting ? (
+                  isStockSubmitting ? (
+                    <Loader label="Adding" color="white" />
+                  ) : (
+                    "Add"
+                  )
+                }
+              />
+            </MyForm>
+          </Dialog>
+          <Dialog
+            open={openBrokerageModel}
+            onClose={() => setOpenBrokerageModel(false)}
+            title={`Add Brokerage Account`}>
+            <MyForm onSubmit={handleBrokerageSubmit(addBrokerageHandler)}>
+              <InputField
+                loading={isBrokerageSubmitting}
+                id='brokerage_no'
+                label='Brokerag No'
+                type='number'
+                className='appearance-none'
+                placeholder='Enter Brokerage No'
+                error={brokerageErrors.brokerage_no?.message}
+                {...brokerageRegister("brokerage_no")}
+              />
+              <InputField
+                loading={isBrokerageSubmitting}
+                id='brokerage_account_no'
+                label='Brokerage Account No'
+                type='number'
+                className='appearance-none'
+                placeholder='Enter Brokerage Account No'
+                error={brokerageErrors.brokerage_account_no?.message}
+                {...brokerageRegister("brokerage_account_no")}
+              />
+              <InputField
+                loading={isBrokerageSubmitting}
+                id='brokerage_account_holder_name'
+                label='Brokerage Account Holder Name'
+                type='text'
+                className='appearance-none'
+                placeholder='Enter Account Holder Name'
+                error={brokerageErrors.brokerage_account_holder_name?.message}
+                {...brokerageRegister("brokerage_account_holder_name")}
+              />
+              <FormButton
+                loading={isBrokerageSubmitting}
+                buttonName={
+                  isBrokerageSubmitting ? (
                     <Loader label="Adding" color="white" />
                   ) : (
                     "Add"

@@ -9,7 +9,7 @@ import Panel from "../components/panel/Panel.jsx";
 const Dashboard = () => {
   const { banks, loading, bankTransaction } = useBankContent();
   const {user} = useUserContext();
-
+  
   if (loading) {
     return <PageLoader/>
   }
