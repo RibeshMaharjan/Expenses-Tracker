@@ -32,7 +32,7 @@ export const BankProvider = ({ children }) => {
     setLoading(true);
     setBankError([]);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bankaccount`,
+      const response = await axios.get(`/api/bankaccount`,
         {
           withCredentials: true,
         }
@@ -40,7 +40,7 @@ export const BankProvider = ({ children }) => {
 
       await delay();
 
-      const transactionResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/transaction/`,
+      const transactionResponse = await axios.get(`/api/transaction/`,
         {
           withCredentials: true,
         }
@@ -72,7 +72,7 @@ export const BankProvider = ({ children }) => {
     } catch (error) {
       if(error.status === 401) {
         const refreshToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },

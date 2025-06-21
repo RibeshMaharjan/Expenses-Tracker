@@ -43,7 +43,7 @@ const RightSidebar = ({ banks, transactions }) => {
       setIsSubmitting(true);
   
       try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/transaction/category`,
+        const response = await axios.post(`/api/transaction/category`,
           formData,
           {
             withCredentials: true,
@@ -63,7 +63,7 @@ const RightSidebar = ({ banks, transactions }) => {
         toast.error(error.response.data.message);
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+            `/api/auth/token`,
             {
               "id": user.id
             },

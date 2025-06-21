@@ -33,3 +33,4 @@
 LICENSE
 README.md
 /.idea
+!client/.env.production  # allow this

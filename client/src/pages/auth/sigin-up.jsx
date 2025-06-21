@@ -71,7 +71,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/auth/signup`,
+        `/api/auth/signup`,
         formData
       );
 

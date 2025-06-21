@@ -88,7 +88,7 @@ const StockTransaction = () => {
   useEffect( () => {
     const getTransactionCategory = async () => {
       try {
-        const brokerageResponse = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/brokerage`,
+        const brokerageResponse = await axios.get(`/api/brokerage`,
           {
             withCredentials: true,
           },
@@ -99,7 +99,7 @@ const StockTransaction = () => {
         toast.error(error.response.data.message)
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+            `/api/auth/token`,
             {
               "id": user.id
             },
@@ -118,7 +118,7 @@ const StockTransaction = () => {
   const addTransactionHandler = async (formData) => {
     console.log(formData)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/transactions/create`,
+      const response = await axios.post(`/api/transactions/create`,
         formData,
         {
           withCredentials: true,
@@ -138,7 +138,7 @@ const StockTransaction = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },

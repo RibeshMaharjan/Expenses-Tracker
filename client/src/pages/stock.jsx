@@ -121,7 +121,7 @@ const Stock = () => {
   const addStockHandler = async (formData) => {
       console.log(formData)
       try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/stock`,
+        const response = await axios.post(`/api/stock`,
           formData,
           {
             withCredentials: true,
@@ -141,7 +141,7 @@ const Stock = () => {
         toast.error(error.response.data.message);
         if(error.status === 401) {
           const refrehToken = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+            `/api/auth/token`,
             {
               "id": user.id
             },
@@ -158,7 +158,7 @@ const Stock = () => {
   const addBrokerageHandler = async (formData) => {
     console.log(formData)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/brokerage/createaccount`,
+      const response = await axios.post(`/api/brokerage/createaccount`,
         formData,
         {
           withCredentials: true,
@@ -178,7 +178,7 @@ const Stock = () => {
       toast.error(error.response.data.message);
       if(error.status === 401) {
         const refrehToken = await axios.post(
-          `${import.meta.env.VITE_SERVER_URL}/api/auth/token`,
+          `/api/auth/token`,
           {
             "id": user.id
           },

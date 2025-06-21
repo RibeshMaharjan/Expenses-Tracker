@@ -47,7 +47,7 @@ def get_today_price():
 if __name__ == '__main__':
    # Run the Flask app with configurable host and port
     app.run(
-        host='127.0.0.1',
+        host='0.0.0.0',
         port=int(os.environ.get('PORT', 5000)),
         debug=True  # Remove debug=True in production
     )
