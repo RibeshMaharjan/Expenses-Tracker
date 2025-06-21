@@ -74,7 +74,6 @@ const Layout = () => {
   const { bankError, getBankAccountsAndTransactions } = useBankContent();
 
   useEffect( () => {
-    // setLoading(true);
       const getAll = async () => {
         try {
           await Promise.all([
@@ -96,34 +95,16 @@ const Layout = () => {
               <Navigate to="sign-in" />
             );
           }
-        } finally {
-          // setLoading(false);
         }
       }
       getAll();
   }, []);
 
-  if(bankError[0]?.status === 401 || stockError[0]?.status === 401) {
-    return (
-      <Navigate to="sign-in" />
-    );
+  if (!user || bankError[0]?.status === 401 || stockError[0]?.status === 401) {
+    return <Navigate to="/sign-in" />;
   }
 
-  return (
-    <>
-      <Routes>
-        <Route element={<RootLayout />}>
-          <Route path="/account-page" element={<Setting />}></Route>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/banktransaction" element={<BankTransaction />} />
-          <Route path="/stocktransaction" element={<StockTransaction />} />
-          <Route path="/stock" element={<Stock />} />
-          <Route path="/bankaccount" element={<Bank />} />
-        </Route>
-      </Routes>
-    </>
-  );
+  return <RootLayout />;
 };
 
 export default Layout;
