@@ -16,6 +16,7 @@ describe("Bank Route Testing" , () => {
   });
   
   describe("Bank Testing", () => {
+
     test("create bank account", async () => {
       const response = await request(app).post("/api/bankaccount/createaccount")
         .set("Cookie", cookies)
@@ -27,6 +28,20 @@ describe("Bank Route Testing" , () => {
       });
       
       expect(response.status).toBe(201);
+    });
+    
+    test('should deposit money into the bank', async () => {
+      const response = await request(app).post('/api/bankaccount/deposit')
+        .set("Cookies", cookies)
+        .send({
+          bank_account_id: 1, // test account: asura@example.com
+          depost_amount:  2000,
+        })
+    });
+    
+    test('should delete back account', async () => {
+      const response = await request(app).delete(`/api/bankaccount/1`)
+        .set("Cookies", cookies);
     });
   });
 });

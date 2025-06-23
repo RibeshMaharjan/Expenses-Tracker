@@ -15,6 +15,7 @@ export const StockProvider = ({ children }) => {
   const [brokerage, setBrokerage] = useState([]);
   const [stockTransactions, setStockTransactions] = useState([]);
   const [stockError, setStockError] = useState([]);
+  const navigate = useNavigate();
 
   const getStockAccountsAndTransactions = async () => {
     setLoading(true);
@@ -54,7 +55,7 @@ export const StockProvider = ({ children }) => {
       console.log(error);
       if(error.status === 401) {
         setLoading(true);
-        const refrehToken = await axios.post(
+        const refreshToken = await axios.post(
           `/api/auth/token`,
           {
             "id": user.id
@@ -62,9 +63,7 @@ export const StockProvider = ({ children }) => {
           {
             withCredentials: true,
           });
-        if(refrehToken.status !== 200) return (
-          <Navigate to="sign-in" />
-        );
+        if(refreshToken.status !== 200) navigate("/sign-in");
       }
       setStockError([
         {

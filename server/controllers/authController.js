@@ -182,9 +182,9 @@ export const Logout = async (req, res) => {
     [id]
   );
 
-  const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
+  const refreshTokens = tokenresult.rows[0].refresh_token;
   const updatedRefreshTokens = refreshTokens.filter(token => token !== refreshToken);
-
+  
   try {
     const tokenresult = await db.query(
       `UPDATE users

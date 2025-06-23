@@ -100,7 +100,7 @@ const Layout = () => {
       getAll();
   }, []);
 
-  if (!user || bankError[0]?.status === 401 || stockError[0]?.status === 401) {
+  if (!user || bankError[0]?.status === 401 || stockError[0]?.status === 401 || bankError[0]?.status === 403 || stockError[0]?.status === 403) {
     return <Navigate to="/sign-in" />;
   }
 

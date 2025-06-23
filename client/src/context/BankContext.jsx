@@ -1,8 +1,10 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {toast} from "sonner";
 import {Navigate} from "react-router-dom";
 import {useUserContext} from "@/context/UserContext.jsx";
+import {useNavigate} from "react-router-dom";
+
 
 /*
 * Context for Bank Accounts and Transactions
@@ -19,7 +21,8 @@ export const BankProvider = ({ children }) => {
   const [banks, setBanks] = useState([]);
   const [bankTransaction, setBankTransaction] = useState([]);
   const [bankError, setBankError] = useState([]);
-
+  const navigate = useNavigate();
+  
   const delay = () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -79,9 +82,7 @@ export const BankProvider = ({ children }) => {
           {
             withCredentials: true,
           });
-        if(refreshToken.status !== 200) return (
-          <Navigate to="sign-in" />
-        );
+        if(refreshToken.status !== 200) navigate("/sign-in");
       }
       console.log(error);
       toast.error(error.response.data.message);

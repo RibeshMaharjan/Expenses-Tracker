@@ -34,7 +34,7 @@ const dbinit = async () => {
         user_type user_type NOT NULL DEFAULT 'user',
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP,
-        refresh_token TEXT
+        refresh_token TEXT[]
       );
     `);
 

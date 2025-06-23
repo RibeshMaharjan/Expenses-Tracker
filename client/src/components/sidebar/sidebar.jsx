@@ -22,8 +22,6 @@ const Sidebar = ({ children }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    console.log("logout");
-    console.log(user)
     const refreshToken = await axios.post(
       `/api/auth/logout`,
       {
@@ -34,7 +32,6 @@ const Sidebar = ({ children }) => {
       });
     const removalSuccessful = removeUser();
 
-    console.log(refreshToken)
     if (removalSuccessful && (refreshToken.status === 200)) {
       console.log("User removal successful.");
       navigate("/sign-in");

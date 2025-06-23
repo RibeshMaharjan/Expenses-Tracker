@@ -15,17 +15,10 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 
-function mockAuth(req, res, next) {
-  req.user = { id: 4 }; // mock logged-in user
-  next();
-}
-
-app.use(mockAuth);
 app.use("/api", routes);
 
 app.use(express.static(path.resolve(__dirname, "client/dist")));

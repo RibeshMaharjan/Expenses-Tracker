@@ -8,7 +8,7 @@
     "migrate": "node migrations/db-migration.js",
     "seeds": "node seeds/db-seeds.js",
     "dev": "nodemon index.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx dotenv -e .env.test -- jest",
+    "test": "dotenv -e .env.test -- npm run test:seeds && NODE_OPTIONS=--experimental-vm-modules npx dotenv -e .env.test -- jest",
     "test:migrate": "node --env-file ./.env.test migrations/db-migration.js",
     "test:seeds": "node --env-file ./.env.test seeds/db-seeds.js"
   },

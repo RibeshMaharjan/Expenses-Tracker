@@ -17,11 +17,9 @@ export const UserProvider = ({ children }) => {
   };
 
   const removeUser = () => {
-    setUser(null);
-    localStorage.removeItem('user');
     try {
-      setUser(null);
       localStorage.removeItem('user');
+      setUser(null);
       return true;
     } catch (error) {
       console.error("Error logging out user:", error);

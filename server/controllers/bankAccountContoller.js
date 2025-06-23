@@ -114,6 +114,7 @@ export const createBankAccount = async (req, res) => {
 
     return res.status(201).json({
       message: "Bank account created successfully.",
+      data: result.rows[0]
     })
 
   } catch (error) {
@@ -307,7 +308,6 @@ export const deleteBankAccount = async (req, res) => {
     }
 
     return res.sendStatus(204);
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
