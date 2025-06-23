@@ -80,7 +80,7 @@ export const signinUser = async(req, res) => {
       [email]
     );
 
-    const user = result.rows[0];    
+    const user = result.rows[0];
 
     if(!user) {
       return res.status(401).json({
@@ -141,8 +141,14 @@ export const refreshToken = async (req, res) => {
       [id]
     );
     
-    const refreshTokens = tokenresult.rows.length !== 0 ? tokenresult.rows[0].refresh_token : [];
-    if(!refreshTokens.includes(refreshToken)) res.status(403);
+    const refreshTokenRow = tokenresult.rows[0];
+    const refreshTokens = (refreshTokenRow && Array.isArray(refreshTokenRow.refresh_token))
+      ? refreshTokenRow.refresh_token
+      : [];
+    
+    if (!refreshTokens.includes(refreshToken)) {
+      return res.sendStatus(403); // Also send a response!
+    }
 
     const payload = validateRefreshToken(refreshToken);
     if(!payload) {

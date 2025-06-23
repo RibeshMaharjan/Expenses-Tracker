@@ -1,36 +1,9 @@
-import cors from "cors";
-import 'dotenv/config';
-import express from "express";
-import cookieParser from 'cookie-parser';
-import routes from "./routes/index.js";
-import path from "path";
+import app from "./app.js";
 
-const app = express();
-
-const PORT = process.env.PORT;
-const __dirname = path.join(path.resolve(), "../");
-
-// middleware
-app.use(cors());
-app.use(
-  cors({
-    credentials: true,
-  })
-);
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({extended: false}));
-
-app.use("/api", routes);
-
-app.use(express.static(path.resolve(__dirname, "client/dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
-})
+const PORT = process.env.PORT || 8000;
 
 // Server Init
-app.listen(process.env.PORT, () => {
-  console.log(`Server Started on port ${process.env.PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server Started on port ${PORT}`);
 })
 

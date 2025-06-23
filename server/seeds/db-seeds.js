@@ -42,6 +42,8 @@ const runSeed = async () => {
     await db.query(`
       INSERT INTO transaction_categories (name, user_id)
       VALUES
+        ('Initial Deposit', $1),
+        ('Initial Deposit', $2),
         ('Groceries', $1),
         ('Transport', $1),
         ('Salary', $2),
