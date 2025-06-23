@@ -62,7 +62,13 @@ This section provides instructions on how to set up and run the Expenses Tracker
    ```
    The client will run on port 5173 by default.
 
-5. **Set up and run the microservice (optional)**
+5. **Set up and run the microservice**
+   ```shell
+   python -m venv venv # create venv env
+   source venv/bin/activate # activate venv env for linux
+   .\venv\Scripts\Activate.ps1 # activate venv env for powershell
+   venv\Scripts\activate.bat # activate venv env for command prompt
+   ```
    ```
    pip install -r requirements.txt
    python app.py
